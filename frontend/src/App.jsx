@@ -178,7 +178,7 @@ function App() {
     }
 
     alert(
-      `Terminaste el tarjetero\nCorrectas: ${correctCount} de ${quizQuestions.length}\nTiempo: ${formatTime(elapsedSeconds)}`
+      `Terminaste el simulacro\nCorrectas: ${correctCount} de ${quizQuestions.length}\nTiempo: ${formatTime(elapsedSeconds)}`
     );
 
     setQuizQuestions([]);
@@ -247,7 +247,7 @@ function App() {
           {file && <p>Archivo seleccionado: {file.name}</p>}
 
           <button onClick={handleUploadWord} disabled={loading}>
-            {loading ? "Procesando..." : "Convertir Word a JSON"}
+            {loading ? "Procesando..." : "Procesar archivo"}
           </button>
 
           {(file || questions.length > 0) && (
@@ -273,7 +273,7 @@ function App() {
             />
           </label>
 
-          <button onClick={startQuiz}>Empezar tarjetero</button>
+          <button onClick={startQuiz}>Empezar simulacro</button>
         </section>
       )}
 
