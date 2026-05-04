@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 function shuffleArray(array) {
@@ -13,7 +13,19 @@ function areAnswersCorrect(selectedAnswers, correctAnswers) {
   return selectedAnswers.every((answer) => correctAnswers.includes(answer));
 }
 
+function formatTime(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+    2,
+    "0"
+  )}`;
+}
+
 function App() {
+  const [showWelcome, setShowWelcome] = useState(true);
+
   const [file, setFile] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,6 +37,19 @@ function App() {
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [result, setResult] = useState(null);
 
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+
+  useEffect(() => {
+    if (quizQuestions.length === 0) return;
+
+    const intervalId = setInterval(() => {
+      setElapsedSeconds((previousSeconds) => previousSeconds + 1);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [quizQuestions.length]);
+
   function resetStateForNewFile(selectedFile) {
     setFile(selectedFile);
     setQuestions([]);
@@ -33,6 +58,8 @@ function App() {
     setCurrentIndex(0);
     setSelectedAnswers([]);
     setResult(null);
+    setElapsedSeconds(0);
+    setCorrectCount(0);
   }
 
   async function handleUploadWord() {
@@ -65,6 +92,8 @@ function App() {
       setCurrentIndex(0);
       setSelectedAnswers([]);
       setResult(null);
+      setElapsedSeconds(0);
+      setCorrectCount(0);
 
       console.log("JSON recibido:", data.questions);
     } catch (error) {
@@ -94,6 +123,8 @@ function App() {
     setCurrentIndex(0);
     setSelectedAnswers([]);
     setResult(null);
+    setElapsedSeconds(0);
+    setCorrectCount(0);
   }
 
   function toggleAnswer(letter) {
@@ -121,21 +152,22 @@ function App() {
       currentQuestion.answers
     );
 
+    if (isCorrect) {
+      setCorrectCount((previousCount) => previousCount + 1);
+    }
+
     setResult({
       isCorrect,
       correctAnswers: currentQuestion.answers
     });
   }
 
-  function goToPreviousQuestion() {
-    if (currentIndex === 0) return;
-
-    setCurrentIndex(currentIndex - 1);
-    setSelectedAnswers([]);
-    setResult(null);
-  }
-
   function goToNextQuestion() {
+    if (!result) {
+      alert("Primero tenés que verificar la respuesta");
+      return;
+    }
+
     if (currentIndex < quizQuestions.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setSelectedAnswers([]);
@@ -143,12 +175,16 @@ function App() {
       return;
     }
 
-    alert("Terminaste el tarjetero");
+    alert(
+      `Terminaste el tarjetero\nCorrectas: ${correctCount} de ${quizQuestions.length}\nTiempo: ${formatTime(elapsedSeconds)}`
+    );
 
     setQuizQuestions([]);
     setCurrentIndex(0);
     setSelectedAnswers([]);
     setResult(null);
+    setElapsedSeconds(0);
+    setCorrectCount(0);
   }
 
   function resetQuiz() {
@@ -156,6 +192,8 @@ function App() {
     setCurrentIndex(0);
     setSelectedAnswers([]);
     setResult(null);
+    setElapsedSeconds(0);
+    setCorrectCount(0);
   }
 
   function clearAll() {
@@ -166,9 +204,27 @@ function App() {
     setCurrentIndex(0);
     setSelectedAnswers([]);
     setResult(null);
+    setElapsedSeconds(0);
+    setCorrectCount(0);
   }
 
   const currentQuestion = quizQuestions[currentIndex];
+
+  if (showWelcome) {
+    return (
+      <main className="container">
+        <section className="card welcome-card">
+          <img
+            src="/simulacroparajoyas.png"
+            alt="Simulacro para joyas"
+            className="welcome-image"
+          />
+
+          <button onClick={() => setShowWelcome(false)}>Comenzar</button>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="container">
@@ -189,7 +245,7 @@ function App() {
           {file && <p>Archivo seleccionado: {file.name}</p>}
 
           <button onClick={handleUploadWord} disabled={loading}>
-            {loading ? "Procesando..." : "Procesar archivo"}
+            {loading ? "Procesando..." : "Convertir Word a JSON"}
           </button>
 
           {(file || questions.length > 0) && (
@@ -225,6 +281,13 @@ function App() {
             <p className="file-used">
               Archivo utilizado: <strong>{file?.name}</strong>
             </p>
+
+            <div className="quiz-stats">
+              <span>Tiempo: {formatTime(elapsedSeconds)}</span>
+              <span>
+                Correctas: {correctCount} / {quizQuestions.length}
+              </span>
+            </div>
 
             <div className="quiz-header">
               <p>
@@ -271,9 +334,9 @@ function App() {
                   <p>Respuesta correcta.</p>
                 </div>
               ) : (
-                  <div className="wrong-result">
-                    <img src="/joyita.jpg" alt="Joyita" className="result-image" />
-                    <p>Las respuestas correctas eran:</p>
+                <div className="wrong-result">
+                  <img src="/joyita.jpg" alt="Joyita" className="result-image" />
+                  <p>Las respuestas correctas eran:</p>
 
                   <ul>
                     {currentQuestion.options
@@ -296,24 +359,6 @@ function App() {
               </button>
             </div>
           )}
-
-          <div className="actions">
-            <button
-              className="secondary-button"
-              onClick={goToPreviousQuestion}
-              disabled={currentIndex === 0}
-            >
-              Anterior
-            </button>
-
-            <button
-              className="secondary-button"
-              onClick={goToNextQuestion}
-              disabled={!result && currentIndex === quizQuestions.length - 1}
-            >
-              Siguiente
-            </button>
-          </div>
         </section>
       )}
     </main>
