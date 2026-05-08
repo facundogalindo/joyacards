@@ -29,5 +29,7 @@ uploads/
 tmp/
 temp/
 
+material/
+
 # Word temporary files
 ~$*.docx
