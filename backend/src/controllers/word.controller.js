@@ -8,7 +8,11 @@ async function convertWordToJsonController(req, res) {
       });
     }
 
-    const questions = await convertWordToJson(req.file.buffer);
+    const shouldShuffle = req.query.shuffle !== "false";
+
+    const questions = await convertWordToJson(req.file.buffer, {
+      shuffle: shouldShuffle
+    });
 
     return res.json({
       total: questions.length,

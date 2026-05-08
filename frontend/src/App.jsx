@@ -1,36 +1,16 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import QuestionBuilder from "./QuestionBuilder";
-
-function shuffleArray(array) {
-  return [...array].sort(() => Math.random() - 0.5);
-}
-
-function areAnswersCorrect(selectedAnswers, correctAnswers) {
-  if (selectedAnswers.length !== correctAnswers.length) {
-    return false;
-  }
-
-  return selectedAnswers.every((answer) => correctAnswers.includes(answer));
-}
-
-function areMultiDropdownAnswersCorrect(items, userAnswers) {
-  return items.every((item) => {
-    return userAnswers[item.id] === item.answer;
-  });
-}
-
-function formatTime(totalSeconds) {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-    2,
-    "0"
-  )}`;
-}
+import { uploadWordToJson } from "./services/wordApi";
+import {
+  areAnswersCorrect,
+  areMultiDropdownAnswersCorrect,
+  formatTime,
+  shuffleArray
+} from "./utils/quizUtils";
 
 function App() {
+  const [currentPage, setCurrentPage] = useState("home");
   const [showWelcome, setShowWelcome] = useState(true);
 
   const [file, setFile] = useState(null);
@@ -47,7 +27,6 @@ function App() {
 
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState("home");
 
   useEffect(() => {
     if (quizQuestions.length === 0) return;
@@ -81,21 +60,9 @@ function App() {
     try {
       setLoading(true);
 
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3001";
-
-      const response = await fetch(`${apiUrl}/api/word/to-json`, {
-        method: "POST",
-        body: formData
+      const data = await uploadWordToJson(file, {
+        shuffle: true
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Error al convertir Word a JSON");
-      }
 
       setQuestions(data.questions);
       setSelectedAmount(data.questions.length);
@@ -365,9 +332,11 @@ function App() {
   }
 
   const currentQuestion = quizQuestions[currentIndex];
+
   if (currentPage === "builder") {
     return <QuestionBuilder onBack={() => setCurrentPage("home")} />;
   }
+
   if (showWelcome) {
     return (
       <main className="container">
@@ -405,6 +374,7 @@ function App() {
           <button onClick={handleUploadWord} disabled={loading}>
             {loading ? "Procesando..." : "Procesar archivo"}
           </button>
+
           <button
             className="secondary-button builder-button"
             onClick={() => setCurrentPage("builder")}

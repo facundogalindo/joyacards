@@ -1,0 +1,319 @@
+import { Document, ImageRun, Packer, Paragraph, TextRun } from "docx";
+
+export const QUESTION_TYPES = {
+  true_false: {
+    label: "Verdadero / Falso",
+    marker: "@"
+  },
+  single_choice: {
+    label: "Opción única",
+    marker: "@@"
+  },
+  multiple_choice: {
+    label: "Opción múltiple",
+    marker: "@@@"
+  },
+  multi_dropdown: {
+    label: "Varios desplegables",
+    marker: "@@@@"
+  }
+};
+
+const EMPTY_OPTIONS = [
+  { text: "", correct: false },
+  { text: "", correct: false },
+  { text: "", correct: false },
+  { text: "", correct: false }
+];
+
+const EMPTY_ITEMS = [
+  {
+    text: "",
+    options: ["Verdadero", "Falso"],
+    correctAnswer: "Verdadero"
+  }
+];
+
+export function getOptionLetter(index) {
+  return String.fromCharCode(97 + index);
+}
+
+export function getTypeLabel(type) {
+  return QUESTION_TYPES[type]?.label || "Pregunta";
+}
+
+export function getTypeMarker(type) {
+  return QUESTION_TYPES[type]?.marker || "@@";
+}
+
+export function createEmptyForm(type = "single_choice") {
+  return {
+    type,
+    title: "",
+    hasImage: false,
+    imagePreview: null,
+    trueFalseAnswer: "Verdadero",
+    options: EMPTY_OPTIONS.map((option) => ({ ...option })),
+    items: EMPTY_ITEMS.map((item) => ({ ...item }))
+  };
+}
+
+export function normalizeQuestionForEdit(question) {
+  const baseForm = {
+    type: question.type,
+    title: question.title,
+    hasImage: Boolean(question.hasImage),
+    imagePreview: question.imagePreview || null,
+    trueFalseAnswer: "Verdadero",
+    options: EMPTY_OPTIONS.map((option) => ({ ...option })),
+    items: EMPTY_ITEMS.map((item) => ({ ...item }))
+  };
+
+  if (question.type === "true_false") {
+    return {
+      ...baseForm,
+      trueFalseAnswer: question.trueFalseAnswer || "Verdadero"
+    };
+  }
+
+  if (question.type === "multi_dropdown") {
+    return {
+      ...baseForm,
+      items: question.items.map((item) => ({
+        text: item.text,
+        options: item.options,
+        correctAnswer: item.correctAnswer
+      }))
+    };
+  }
+
+  return {
+    ...baseForm,
+    options: question.options.map((option) => ({ ...option }))
+  };
+}
+
+export function buildQuestionText(question, index) {
+  const marker = getTypeMarker(question.type);
+  const questionNumber = index + 1;
+
+  let text = `${marker} ${questionNumber}. ${question.title}\n`;
+
+  if (question.hasImage) {
+    text += `\n[[IMAGEN]]\n`;
+  }
+
+  if (question.type === "true_false") {
+    const verdaderoMark = question.trueFalseAnswer === "Verdadero" ? " *" : "";
+    const falsoMark = question.trueFalseAnswer === "Falso" ? " *" : "";
+
+    text += `a) Verdadero${verdaderoMark}\n`;
+    text += `b) Falso${falsoMark}`;
+
+    return text.trim();
+  }
+
+  if (question.type === "multi_dropdown") {
+    question.items.forEach((item, itemIndex) => {
+      const optionsText = item.options
+        .map((option) => {
+          return option === item.correctAnswer ? `${option} *` : option;
+        })
+        .join(" / ");
+
+      text += `${itemIndex + 1}) ${item.text} [${optionsText}]\n`;
+    });
+
+    return text.trim();
+  }
+
+  question.options.forEach((option, optionIndex) => {
+    if (!option.text.trim()) return;
+
+    const letter = getOptionLetter(optionIndex);
+    const correctMark = option.correct ? " *" : "";
+
+    text += `${letter}) ${option.text}${correctMark}\n`;
+  });
+
+  return text.trim();
+}
+
+export function convertProcessedQuestionToBuilderQuestion(processedQuestion) {
+  const hasImage = Boolean(processedQuestion.hasImage || processedQuestion.image);
+
+  if (processedQuestion.type === "true_false") {
+    const correctOption = processedQuestion.options.find((option) =>
+      processedQuestion.answers.includes(option.letter)
+    );
+
+    return {
+      type: "true_false",
+      title: processedQuestion.question,
+      hasImage,
+      imagePreview: processedQuestion.image || null,
+      trueFalseAnswer: correctOption?.text || "Verdadero"
+    };
+  }
+
+  if (processedQuestion.type === "multi_dropdown") {
+    return {
+      type: "multi_dropdown",
+      title: processedQuestion.question,
+      hasImage,
+      imagePreview: processedQuestion.image || null,
+      items: processedQuestion.items.map((item) => ({
+        text: item.text,
+        options: item.options,
+        correctAnswer: item.answer
+      }))
+    };
+  }
+
+  return {
+    type: processedQuestion.type,
+    title: processedQuestion.question,
+    hasImage,
+    imagePreview: processedQuestion.image || null,
+    options: processedQuestion.options.map((option) => ({
+      text: option.text,
+      correct: processedQuestion.answers.includes(option.letter)
+    }))
+  };
+}
+
+export function downloadBlob(blob, fileName) {
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function dataUrlToUint8Array(dataUrl) {
+  const base64 = dataUrl.split(",")[1];
+  const binaryString = window.atob(base64);
+
+  const bytes = new Uint8Array(binaryString.length);
+
+  for (let index = 0; index < binaryString.length; index++) {
+    bytes[index] = binaryString.charCodeAt(index);
+  }
+
+  return bytes;
+}
+
+function createTextParagraph(text, bold = false) {
+  return new Paragraph({
+    children: [
+      new TextRun({
+        text,
+        bold
+      })
+    ]
+  });
+}
+
+function createEmptyParagraph() {
+  return new Paragraph({
+    children: [new TextRun("")]
+  });
+}
+
+function createImageParagraph(imageDataUrl) {
+  return new Paragraph({
+    children: [
+      new ImageRun({
+        data: dataUrlToUint8Array(imageDataUrl),
+        transformation: {
+          width: 360,
+          height: 260
+        }
+      })
+    ]
+  });
+}
+
+function buildDocxParagraphs(questions) {
+  const paragraphs = [];
+
+  questions.forEach((question, index) => {
+    const marker = getTypeMarker(question.type);
+    const questionNumber = index + 1;
+
+    paragraphs.push(
+      createTextParagraph(`${marker} ${questionNumber}. ${question.title}`, true)
+    );
+
+    if (question.hasImage) {
+      paragraphs.push(createTextParagraph("[[IMAGEN]]"));
+
+      if (question.imagePreview?.startsWith("data:image")) {
+        paragraphs.push(createImageParagraph(question.imagePreview));
+      }
+    }
+
+    if (question.type === "true_false") {
+      const verdaderoMark =
+        question.trueFalseAnswer === "Verdadero" ? " *" : "";
+      const falsoMark = question.trueFalseAnswer === "Falso" ? " *" : "";
+
+      paragraphs.push(createTextParagraph(`a) Verdadero${verdaderoMark}`));
+      paragraphs.push(createTextParagraph(`b) Falso${falsoMark}`));
+      paragraphs.push(createEmptyParagraph());
+      return;
+    }
+
+    if (question.type === "multi_dropdown") {
+      question.items.forEach((item, itemIndex) => {
+        const optionsText = item.options
+          .map((option) => {
+            return option === item.correctAnswer ? `${option} *` : option;
+          })
+          .join(" / ");
+
+        paragraphs.push(
+          createTextParagraph(
+            `${itemIndex + 1}) ${item.text} [${optionsText}]`
+          )
+        );
+      });
+
+      paragraphs.push(createEmptyParagraph());
+      return;
+    }
+
+    question.options.forEach((option, optionIndex) => {
+      if (!option.text.trim()) return;
+
+      const letter = getOptionLetter(optionIndex);
+      const correctMark = option.correct ? " *" : "";
+
+      paragraphs.push(
+        createTextParagraph(`${letter}) ${option.text}${correctMark}`)
+      );
+    });
+
+    paragraphs.push(createEmptyParagraph());
+  });
+
+  return paragraphs;
+}
+
+export async function exportQuestionsToDocx(questions) {
+  const document = new Document({
+    sections: [
+      {
+        properties: {},
+        children: buildDocxParagraphs(questions)
+      }
+    ]
+  });
+
+  const blob = await Packer.toBlob(document);
+
+  downloadBlob(blob, "preguntas-joyacards.docx");
+}

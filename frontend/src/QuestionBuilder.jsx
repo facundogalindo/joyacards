@@ -1,500 +1,17 @@
 import { useMemo, useRef, useState } from "react";
-import { Document, ImageRun, Packer, Paragraph, TextRun } from "docx";
+import { uploadWordToJson } from "./services/wordApi";
+import {
+  QUESTION_TYPES,
+  buildQuestionText,
+  convertProcessedQuestionToBuilderQuestion,
+  createEmptyForm,
+  exportQuestionsToDocx,
+  getOptionLetter,
+  getTypeLabel,
+  getTypeMarker,
+  normalizeQuestionForEdit
+} from "./utils/questionBuilderUtils";
 
-const QUESTION_TYPES = {
-  true_false: {
-    label: "Verdadero / Falso",
-    marker: "@"
-  },
-  single_choice: {
-    label: "Opción única",
-    marker: "@@"
-  },
-  multiple_choice: {
-    label: "Opción múltiple",
-    marker: "@@@"
-  },
-  multi_dropdown: {
-    label: "Varios desplegables",
-    marker: "@@@@"
-  }
-};
-
-const EMPTY_OPTIONS = [
-  { text: "", correct: false },
-  { text: "", correct: false },
-  { text: "", correct: false },
-  { text: "", correct: false }
-];
-
-const EMPTY_ITEMS = [
-  {
-    text: "",
-    options: ["Verdadero", "Falso"],
-    correctAnswer: "Verdadero"
-  }
-];
-
-function getOptionLetter(index) {
-  return String.fromCharCode(97 + index);
-}
-
-function getTypeLabel(type) {
-  return QUESTION_TYPES[type]?.label || "Pregunta";
-}
-
-function getTypeMarker(type) {
-  return QUESTION_TYPES[type]?.marker || "@@";
-}
-
-function getTypeFromMarker(marker) {
-  const entry = Object.entries(QUESTION_TYPES).find(([, value]) => {
-    return value.marker === marker;
-  });
-
-  return entry ? entry[0] : "single_choice";
-}
-
-function createEmptyForm(type = "single_choice") {
-  return {
-    type,
-    title: "",
-    hasImage: false,
-    imagePreview: null,
-    trueFalseAnswer: "Verdadero",
-    options: EMPTY_OPTIONS.map((option) => ({ ...option })),
-    items: EMPTY_ITEMS.map((item) => ({ ...item }))
-  };
-}
-
-function normalizeQuestionForEdit(question) {
-  const baseForm = {
-    type: question.type,
-    title: question.title,
-    hasImage: Boolean(question.hasImage),
-    imagePreview: question.imagePreview || null,
-    trueFalseAnswer: "Verdadero",
-    options: EMPTY_OPTIONS.map((option) => ({ ...option })),
-    items: EMPTY_ITEMS.map((item) => ({ ...item }))
-  };
-
-  if (question.type === "true_false") {
-    return {
-      ...baseForm,
-      trueFalseAnswer: question.trueFalseAnswer || "Verdadero"
-    };
-  }
-
-  if (question.type === "multi_dropdown") {
-    return {
-      ...baseForm,
-      items: question.items.map((item) => ({
-        text: item.text,
-        options: item.options,
-        correctAnswer: item.correctAnswer
-      }))
-    };
-  }
-
-  return {
-    ...baseForm,
-    options: question.options.map((option) => ({ ...option }))
-  };
-}
-
-function buildQuestionText(question, index) {
-  const marker = getTypeMarker(question.type);
-  const questionNumber = index + 1;
-
-  let text = `${marker} ${questionNumber}. ${question.title}\n`;
-
-  if (question.hasImage) {
-    text += `\n[[IMAGEN]]\n`;
-  }
-
-  if (question.type === "true_false") {
-    const verdaderoMark = question.trueFalseAnswer === "Verdadero" ? " *" : "";
-    const falsoMark = question.trueFalseAnswer === "Falso" ? " *" : "";
-
-    text += `a) Verdadero${verdaderoMark}\n`;
-    text += `b) Falso${falsoMark}`;
-
-    return text.trim();
-  }
-
-  if (question.type === "multi_dropdown") {
-    question.items.forEach((item, itemIndex) => {
-      const optionsText = item.options
-        .map((option) => {
-          return option === item.correctAnswer ? `${option} *` : option;
-        })
-        .join(" / ");
-
-      text += `${itemIndex + 1}) ${item.text} [${optionsText}]\n`;
-    });
-
-    return text.trim();
-  }
-
-  question.options.forEach((option, optionIndex) => {
-    if (!option.text.trim()) return;
-
-    const letter = getOptionLetter(optionIndex);
-    const correctMark = option.correct ? " *" : "";
-
-    text += `${letter}) ${option.text}${correctMark}\n`;
-  });
-
-  return text.trim();
-}
-
-function downloadBlob(blob, fileName) {
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  link.click();
-
-  URL.revokeObjectURL(url);
-}
-
-function dataUrlToUint8Array(dataUrl) {
-  const base64 = dataUrl.split(",")[1];
-  const binaryString = window.atob(base64);
-
-  const bytes = new Uint8Array(binaryString.length);
-
-  for (let index = 0; index < binaryString.length; index++) {
-    bytes[index] = binaryString.charCodeAt(index);
-  }
-
-  return bytes;
-}
-
-function createTextParagraph(text, bold = false) {
-  return new Paragraph({
-    children: [
-      new TextRun({
-        text,
-        bold
-      })
-    ]
-  });
-}
-
-function createEmptyParagraph() {
-  return new Paragraph({
-    children: [new TextRun("")]
-  });
-}
-
-function createImageParagraph(imageDataUrl) {
-  return new Paragraph({
-    children: [
-      new ImageRun({
-        data: dataUrlToUint8Array(imageDataUrl),
-        transformation: {
-          width: 360,
-          height: 260
-        }
-      })
-    ]
-  });
-}
-
-function buildDocxParagraphs(questions) {
-  const paragraphs = [];
-
-  questions.forEach((question, index) => {
-    const marker = getTypeMarker(question.type);
-    const questionNumber = index + 1;
-
-    paragraphs.push(
-      createTextParagraph(`${marker} ${questionNumber}. ${question.title}`, true)
-    );
-
-    if (question.hasImage) {
-      paragraphs.push(createTextParagraph("[[IMAGEN]]"));
-
-      if (question.imagePreview?.startsWith("data:image")) {
-        paragraphs.push(createImageParagraph(question.imagePreview));
-      }
-    }
-
-    if (question.type === "true_false") {
-      const verdaderoMark =
-        question.trueFalseAnswer === "Verdadero" ? " *" : "";
-      const falsoMark = question.trueFalseAnswer === "Falso" ? " *" : "";
-
-      paragraphs.push(createTextParagraph(`a) Verdadero${verdaderoMark}`));
-      paragraphs.push(createTextParagraph(`b) Falso${falsoMark}`));
-      paragraphs.push(createEmptyParagraph());
-      return;
-    }
-
-    if (question.type === "multi_dropdown") {
-      question.items.forEach((item, itemIndex) => {
-        const optionsText = item.options
-          .map((option) => {
-            return option === item.correctAnswer ? `${option} *` : option;
-          })
-          .join(" / ");
-
-        paragraphs.push(
-          createTextParagraph(
-            `${itemIndex + 1}) ${item.text} [${optionsText}]`
-          )
-        );
-      });
-
-      paragraphs.push(createEmptyParagraph());
-      return;
-    }
-
-    question.options.forEach((option, optionIndex) => {
-      if (!option.text.trim()) return;
-
-      const letter = getOptionLetter(optionIndex);
-      const correctMark = option.correct ? " *" : "";
-
-      paragraphs.push(
-        createTextParagraph(`${letter}) ${option.text}${correctMark}`)
-      );
-    });
-
-    paragraphs.push(createEmptyParagraph());
-  });
-
-  return paragraphs;
-}
-
-function parseOptionLine(line) {
-  const match = line.match(/^([a-zA-Z])\)\s*(.+)$/);
-
-  if (!match) return null;
-
-  let text = match[2].trim();
-  const correct = text.endsWith("*");
-
-  if (correct) {
-    text = text.slice(0, -1).trim();
-  }
-
-  return {
-    text,
-    correct
-  };
-}
-
-function parseMultiDropdownLine(line) {
-  const match = line.match(/^(\d+)\)\s*(.+?)\s*\[(.+)\]$/);
-
-  if (!match) return null;
-
-  const text = match[2].trim();
-  const rawOptions = match[3].split("/").map((option) => option.trim());
-
-  const options = [];
-  let correctAnswer = "";
-
-  rawOptions.forEach((option) => {
-    const isCorrect = option.endsWith("*");
-    const cleanOption = isCorrect ? option.slice(0, -1).trim() : option;
-
-    options.push(cleanOption);
-
-    if (isCorrect) {
-      correctAnswer = cleanOption;
-    }
-  });
-
-  if (!text || options.length === 0 || !correctAnswer) {
-    return null;
-  }
-
-  return {
-    text,
-    options,
-    correctAnswer
-  };
-}
-
-function parseQuestionsFromText(content) {
-  const lines = content
-    .replace(/\r/g, "\n")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-
-  const parsedQuestions = [];
-  let currentQuestion = null;
-
-  function pushCurrentQuestion() {
-    if (!currentQuestion) return;
-
-    if (currentQuestion.type === "true_false") {
-      if (currentQuestion.title) {
-        parsedQuestions.push(currentQuestion);
-      }
-
-      currentQuestion = null;
-      return;
-    }
-
-    if (currentQuestion.type === "multi_dropdown") {
-      if (currentQuestion.title && currentQuestion.items.length > 0) {
-        parsedQuestions.push(currentQuestion);
-      }
-
-      currentQuestion = null;
-      return;
-    }
-
-    const validOptions = currentQuestion.options.filter((option) =>
-      option.text.trim()
-    );
-
-    if (
-      currentQuestion.title &&
-      validOptions.length >= 2 &&
-      validOptions.some((option) => option.correct)
-    ) {
-      parsedQuestions.push({
-        ...currentQuestion,
-        options: validOptions
-      });
-    }
-
-    currentQuestion = null;
-  }
-
-  lines.forEach((line) => {
-    const questionMatch = line.match(/^(@{1,4})\s*\d+[\).]\s*(.+)$/);
-
-    if (questionMatch) {
-      pushCurrentQuestion();
-
-      const marker = questionMatch[1];
-      const type = getTypeFromMarker(marker);
-      const title = questionMatch[2].trim();
-
-      if (type === "true_false") {
-        currentQuestion = {
-          type,
-          title,
-          hasImage: false,
-          imagePreview: null,
-          trueFalseAnswer: "Verdadero"
-        };
-        return;
-      }
-
-      if (type === "multi_dropdown") {
-        currentQuestion = {
-          type,
-          title,
-          hasImage: false,
-          imagePreview: null,
-          items: []
-        };
-        return;
-      }
-
-      currentQuestion = {
-        type,
-        title,
-        hasImage: false,
-        imagePreview: null,
-        options: []
-      };
-
-      return;
-    }
-
-    if (!currentQuestion) return;
-
-    if (line.toUpperCase() === "[[IMAGEN]]") {
-      currentQuestion.hasImage = true;
-      currentQuestion.imagePreview = null;
-      return;
-    }
-
-    if (currentQuestion.type === "multi_dropdown") {
-      const item = parseMultiDropdownLine(line);
-
-      if (item) {
-        currentQuestion.items.push(item);
-      }
-
-      return;
-    }
-
-    const option = parseOptionLine(line);
-
-    if (!option) return;
-
-    if (currentQuestion.type === "true_false") {
-      if (option.text.toLowerCase() === "verdadero" && option.correct) {
-        currentQuestion.trueFalseAnswer = "Verdadero";
-      }
-
-      if (option.text.toLowerCase() === "falso" && option.correct) {
-        currentQuestion.trueFalseAnswer = "Falso";
-      }
-
-      return;
-    }
-
-    currentQuestion.options.push(option);
-  });
-
-  pushCurrentQuestion();
-
-  return parsedQuestions;
-}
-function convertProcessedQuestionToBuilderQuestion(processedQuestion) {
-  const hasImage = Boolean(processedQuestion.image);
-
-  if (processedQuestion.type === "true_false") {
-    const correctOption = processedQuestion.options.find((option) =>
-      processedQuestion.answers.includes(option.letter)
-    );
-
-    return {
-      type: "true_false",
-      title: processedQuestion.question,
-      hasImage,
-      imagePreview: processedQuestion.image || null,
-      trueFalseAnswer: correctOption?.text || "Verdadero"
-    };
-  }
-
-  if (processedQuestion.type === "multi_dropdown") {
-    return {
-      type: "multi_dropdown",
-      title: processedQuestion.question,
-      hasImage,
-      imagePreview: processedQuestion.image || null,
-      items: processedQuestion.items.map((item) => ({
-        text: item.text,
-        options: item.options,
-        correctAnswer: item.answer
-      }))
-    };
-  }
-
-  return {
-    type: processedQuestion.type,
-    title: processedQuestion.question,
-    hasImage,
-    imagePreview: processedQuestion.image || null,
-    options: processedQuestion.options.map((option) => ({
-      text: option.text,
-      correct: processedQuestion.answers.includes(option.letter)
-    }))
-  };
-}
 function QuestionBuilder({ onBack }) {
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
@@ -533,23 +50,24 @@ function QuestionBuilder({ onBack }) {
     }
   }
 
-function handleImageChange(event) {
-  const selectedImage = event.target.files[0];
+  function handleImageChange(event) {
+    const selectedImage = event.target.files[0];
 
-  if (!selectedImage) return;
+    if (!selectedImage) return;
 
-  const reader = new FileReader();
+    const reader = new FileReader();
 
-  reader.onload = () => {
-    setForm((previousForm) => ({
-      ...previousForm,
-      hasImage: true,
-      imagePreview: reader.result
-    }));
-  };
+    reader.onload = () => {
+      setForm((previousForm) => ({
+        ...previousForm,
+        hasImage: true,
+        imagePreview: reader.result
+      }));
+    };
 
-  reader.readAsDataURL(selectedImage);
-}
+    reader.readAsDataURL(selectedImage);
+  }
+
   function removeImage() {
     setForm((previousForm) => ({
       ...previousForm,
@@ -799,83 +317,60 @@ function handleImageChange(event) {
     }
   }
 
-async function exportQuestions() {
-  if (questions.length === 0) {
-    alert("Primero agregá alguna pregunta");
-    return;
-  }
-
-  const document = new Document({
-    sections: [
-      {
-        properties: {},
-        children: buildDocxParagraphs(questions)
-      }
-    ]
-  });
-
-  const blob = await Packer.toBlob(document);
-
-  downloadBlob(blob, "preguntas-joyacards.docx");
-}
-
- async function importQuestions(event) {
-  const selectedFile = event.target.files[0];
-
-  if (!selectedFile) return;
-
-  try {
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-
-    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3001";
-
-    const response = await fetch(`${apiUrl}/api/word/to-json?shuffle=false`, {
-      method: "POST",
-      body: formData
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "No se pudo importar el archivo");
-    }
-
-    const importedQuestions = data.questions.map(
-      convertProcessedQuestionToBuilderQuestion
-    );
-
-    if (importedQuestions.length === 0) {
-      alert("No se detectaron preguntas válidas en el archivo");
+  async function exportQuestions() {
+    if (questions.length === 0) {
+      alert("Primero agregá alguna pregunta");
       return;
     }
 
-    const shouldReplace =
-      questions.length === 0 ||
-      window.confirm(
-        "¿Querés reemplazar las preguntas actuales?\nAceptar: reemplazar\nCancelar: agregar al final"
+    await exportQuestionsToDocx(questions);
+  }
+
+  async function importQuestions(event) {
+    const selectedFile = event.target.files[0];
+
+    if (!selectedFile) return;
+
+    try {
+      const data = await uploadWordToJson(selectedFile, {
+        shuffle: false
+      });
+
+      const importedQuestions = data.questions.map(
+        convertProcessedQuestionToBuilderQuestion
       );
 
-    if (shouldReplace) {
-      setQuestions(importedQuestions);
-    } else {
-      setQuestions((previousQuestions) => [
-        ...previousQuestions,
-        ...importedQuestions
-      ]);
-    }
+      if (importedQuestions.length === 0) {
+        alert("No se detectaron preguntas válidas en el archivo");
+        return;
+      }
 
-    setEditingIndex(null);
-    setForm(createEmptyForm());
+      const shouldReplace =
+        questions.length === 0 ||
+        window.confirm(
+          "¿Querés reemplazar las preguntas actuales?\nAceptar: reemplazar\nCancelar: agregar al final"
+        );
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      if (shouldReplace) {
+        setQuestions(importedQuestions);
+      } else {
+        setQuestions((previousQuestions) => [
+          ...previousQuestions,
+          ...importedQuestions
+        ]);
+      }
+
+      setEditingIndex(null);
+      setForm(createEmptyForm());
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "No se pudo importar el archivo");
     }
-  } catch (error) {
-    console.error(error);
-    alert(error.message || "No se pudo importar el archivo");
   }
-}
 
   return (
     <main className="container builder-page">
@@ -897,18 +392,19 @@ async function exportQuestions() {
         <div>
           <h2>Continuar desde un archivo</h2>
           <p>
-Podés importar un `.docx` exportado anteriormente o armado con el formato de JoyaCards para seguir agregando o editando preguntas.
+            Podés importar un `.docx` exportado anteriormente o armado con el
+            formato de JoyaCards para seguir agregando o editando preguntas.
           </p>
         </div>
 
         <label className="import-button">
           Importar archivo
-            <input
+          <input
             ref={fileInputRef}
             type="file"
             accept=".docx"
             onChange={importQuestions}
-            />
+          />
         </label>
       </section>
 
@@ -953,29 +449,20 @@ Podés importar un `.docx` exportado anteriormente o armado con el formato de Jo
             <h3>Imagen de la pregunta</h3>
             <p>
               Si agregás imagen, al exportar se insertará el marcador
-              <strong> [[IMAGEN]]</strong>. Después pegá la imagen debajo de ese
-              marcador en Word.
+              <strong> [[IMAGEN]]</strong>.
             </p>
           </div>
 
           <div className="builder-image-actions">
-            <div className="builder-image-actions">
-            <label className="image-upload-card-button">
-                <span className="image-upload-card-icon">🖼️</span>
-
-                <span className="image-upload-card-text">
-                <strong>Cargar imagen</strong>
-                <small>JPG, PNG o WEBP</small>
-                </span>
-
-                <input
+            <label className="secondary-button image-upload-button">
+              Cargar imagen
+              <input
                 ref={imageInputRef}
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                />
+              />
             </label>
-            </div>
 
             {form.hasImage && (
               <button className="danger-button" onClick={removeImage}>
@@ -1037,81 +524,77 @@ Podés importar un `.docx` exportado anteriormente o armado con el formato de Jo
           </div>
         )}
 
-      {(form.type === "single_choice" || form.type === "multiple_choice") && (
-  <div className="builder-panel">
-    <div className="panel-header">
-      <div>
-        <h3>Opciones</h3>
-        <p className="panel-helper-text">
-          {form.type === "multiple_choice"
-            ? "Podés marcar varias respuestas correctas."
-            : "Marcá una sola respuesta correcta."}
-        </p>
-      </div>
+        {(form.type === "single_choice" || form.type === "multiple_choice") && (
+          <div className="builder-panel">
+            <div className="panel-header">
+              <div>
+                <h3>Opciones</h3>
+                <p className="panel-helper-text">
+                  {form.type === "multiple_choice"
+                    ? "Podés marcar varias respuestas correctas."
+                    : "Marcá una sola respuesta correcta."}
+                </p>
+              </div>
 
-      <button className="secondary-button" onClick={addOption}>
-        Agregar opción
-      </button>
-    </div>
+              <button className="secondary-button" onClick={addOption}>
+                Agregar opción
+              </button>
+            </div>
 
-    <div className="option-editor-list">
-      {form.options.map((option, index) => (
-        <div
-          key={index}
-          className={`option-card ${option.correct ? "option-card-correct" : ""}`}
-        >
-          <p className="option-card-title">Opción {index + 1}</p>
+            <div className="option-editor-list">
+              {form.options.map((option, index) => (
+                <div
+                  key={index}
+                  className={`option-card ${
+                    option.correct ? "option-card-correct" : ""
+                  }`}
+                >
+                  <p className="option-card-title">Opción {index + 1}</p>
 
-          <input
-            value={option.text}
-            onChange={(event) =>
-              updateOption(index, "text", event.target.value)
-            }
-            placeholder="Texto de la opción"
-          />
+                  <input
+                    value={option.text}
+                    onChange={(event) =>
+                      updateOption(index, "text", event.target.value)
+                    }
+                    placeholder="Texto de la opción"
+                  />
 
-          <div className="option-card-actions">
-            <button
-              type="button"
-              className={`option-icon-button correct-icon-button ${
-                option.correct ? "active" : ""
-              }`}
-              title={
-                option.correct
-                  ? "Marcada como correcta"
-                  : "Marcar como correcta"
-              }
-              aria-label={
-                option.correct
-                  ? "Marcada como correcta"
-                  : "Marcar como correcta"
-              }
-              onClick={() => {
-                if (form.type === "multiple_choice") {
-                  toggleMultipleCorrect(index);
-                } else {
-                  markSingleCorrect(index);
-                }
-              }}
-            >
-              ✓
-            </button>
+                  <div className="option-card-actions">
+                    <button
+                      type="button"
+                      className={`option-icon-button correct-icon-button ${
+                        option.correct ? "active" : ""
+                      }`}
+                      title={
+                        option.correct
+                          ? "Marcada como correcta"
+                          : "Marcar como correcta"
+                      }
+                      onClick={() => {
+                        if (form.type === "multiple_choice") {
+                          toggleMultipleCorrect(index);
+                        } else {
+                          markSingleCorrect(index);
+                        }
+                      }}
+                    >
+                      ✓
+                    </button>
 
-            <button
-              type="button"
-              className="option-icon-button delete-icon-button"
-              title="Eliminar opción"
-              aria-label="Eliminar opción"
-              onClick={() => removeOption(index)}
-            >
-              🗑
-            </button>
+                    <button
+                      type="button"
+                      className="option-icon-button delete-icon-button"
+                      title="Eliminar opción"
+                      onClick={() => removeOption(index)}
+                    >
+                      🗑
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+        )}
 
         {form.type === "multi_dropdown" && (
           <div className="builder-panel">

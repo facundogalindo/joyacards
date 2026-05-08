@@ -304,6 +304,53 @@ function isValidQuestion(question) {
   );
 }
 
+function formatQuestionsWithoutShuffle(questions) {
+  return questions.map((question) => {
+    if (question.type === "multi_dropdown") {
+      return {
+        type: question.type,
+        question: question.question,
+        hasImage: question.hasImage || Boolean(question.image),
+        image: question.image || null,
+        items: question.items
+      };
+    }
+
+    if (question.type === "drag_words") {
+      return {
+        ...question,
+        hasImage: question.hasImage || Boolean(question.image),
+        image: question.image || null
+      };
+    }
+
+    const options = [];
+    const answers = [];
+
+    question.options.forEach((option, index) => {
+      const letter = OPTION_LETTERS[index];
+
+      options.push({
+        letter,
+        text: option.text
+      });
+
+      if (option.isCorrect) {
+        answers.push(letter);
+      }
+    });
+
+    return {
+      type: question.type,
+      question: question.question,
+      hasImage: question.hasImage || Boolean(question.image),
+      image: question.image || null,
+      options,
+      answers
+    };
+  });
+}
+
 function randomizeQuestionOptions(question) {
   if (question.type === "multi_dropdown") {
     return {
@@ -356,53 +403,6 @@ function randomizeQuestionOptions(question) {
 
 function randomizeQuestionsAndOptions(questions) {
   return shuffleArray(questions).map(randomizeQuestionOptions);
-}
-
-function formatQuestionsWithoutShuffle(questions) {
-  return questions.map((question) => {
-    if (question.type === "multi_dropdown") {
-      return {
-        type: question.type,
-        question: question.question,
-        hasImage: question.hasImage || Boolean(question.image),
-        image: question.image || null,
-        items: question.items
-      };
-    }
-
-    if (question.type === "drag_words") {
-      return {
-        ...question,
-        hasImage: question.hasImage || Boolean(question.image),
-        image: question.image || null
-      };
-    }
-
-    const options = [];
-    const answers = [];
-
-    question.options.forEach((option, index) => {
-      const letter = OPTION_LETTERS[index];
-
-      options.push({
-        letter,
-        text: option.text
-      });
-
-      if (option.isCorrect) {
-        answers.push(letter);
-      }
-    });
-
-    return {
-      type: question.type,
-      question: question.question,
-      hasImage: question.hasImage || Boolean(question.image),
-      image: question.image || null,
-      options,
-      answers
-    };
-  });
 }
 
 async function convertWordToJson(fileBuffer, options = {}) {
