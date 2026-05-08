@@ -447,29 +447,31 @@ function QuestionBuilder({ onBack }) {
         <div className="builder-image-panel">
           <div>
             <h3>Imagen de la pregunta</h3>
-            <p>
-              Si agregás imagen, al exportar se insertará el marcador
-              <strong> [[IMAGEN]]</strong>.
-            </p>
           </div>
 
-          <div className="builder-image-actions">
-            <label className="secondary-button image-upload-button">
-              Cargar imagen
-              <input
-                ref={imageInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-              />
-            </label>
+        <div className="builder-image-actions">
+          <label className="image-upload-card">
+            <span className="image-upload-icon">🖼️</span>
 
-            {form.hasImage && (
-              <button className="danger-button" onClick={removeImage}>
-                Quitar imagen
-              </button>
-            )}
-          </div>
+            <span className="image-upload-text">
+              <strong>Cargar imagen</strong>
+              <small>JPG, PNG o WEBP</small>
+            </span>
+
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          </label>
+
+          {form.hasImage && (
+            <button className="danger-button remove-image-button" onClick={removeImage}>
+              Quitar imagen
+            </button>
+          )}
+        </div>
 
           {form.hasImage && (
             <div className="builder-image-preview">
