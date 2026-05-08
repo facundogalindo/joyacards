@@ -19,8 +19,11 @@ function normalizeWordText(rawText) {
   return rawText
     .replace(/\r/g, "\n")
     .replace(/\u00A0/g, " ")
+    // Separa preguntas con @, @@, @@@, @@@@, @@@@@ aunque vengan pegadas
     .replace(/(@{1,5}\s*\d+[\).]\s*)/g, "\n$1")
+    // Separa opciones tipo a), b), c). No usamos a. para no romper palabras como Argentina.
     .replace(/([a-zA-Z]\)\s*)/g, "\n$1")
+    // Separa items de multi_dropdown tipo 1), 2), 3)
     .replace(/(\d+\)\s*)/g, "\n$1");
 }
 
@@ -116,12 +119,59 @@ function createQuestion(type, question) {
   return {
     type,
     question,
-    hasImage: false,
     image: null,
     options: [],
     answers: [],
     items: []
   };
+}
+
+function randomizeQuestionOptions(question) {
+  if (question.type === "multi_dropdown") {
+    return {
+      type: question.type,
+      question: question.question,
+      image: question.image || null,
+      items: question.items.map((item) => ({
+        ...item,
+        options: shuffleArray(item.options)
+      }))
+    };
+  }
+
+  if (question.type === "drag_words") {
+    return question;
+  }
+
+  const shuffledOptions = shuffleArray(question.options);
+
+  const newOptions = [];
+  const newAnswers = [];
+
+  shuffledOptions.forEach((option, index) => {
+    const newLetter = OPTION_LETTERS[index];
+
+    newOptions.push({
+      letter: newLetter,
+      text: option.text
+    });
+
+    if (option.isCorrect) {
+      newAnswers.push(newLetter);
+    }
+  });
+
+  return {
+    type: question.type,
+    question: question.question,
+    image: question.image || null,
+    options: newOptions,
+    answers: newAnswers
+  };
+}
+
+function randomizeQuestionsAndOptions(questions) {
+  return shuffleArray(questions).map(randomizeQuestionOptions);
 }
 
 async function convertWordToHtml(fileBuffer) {
@@ -143,34 +193,49 @@ async function convertWordToHtml(fileBuffer) {
   return result.value;
 }
 
-function processImage(imageSrc, state) {
-  if (!imageSrc) return;
+function extractImagesFromHtml(html) {
+  const $ = cheerio.load(html);
 
-  if (state.pendingImageQuestion) {
-    state.pendingImageQuestion.image = imageSrc;
-    state.pendingImageQuestion.hasImage = true;
-    state.pendingImageQuestion = null;
-    return;
-  }
+  return $("img")
+    .map((_, img) => $(img).attr("src"))
+    .get()
+    .filter(Boolean);
+}
 
-  if (state.currentQuestion && !state.currentQuestion.image) {
-    state.currentQuestion.image = imageSrc;
-    state.currentQuestion.hasImage = true;
-  }
+function extractTextFromHtml(html) {
+  const $ = cheerio.load(html);
+
+  const textParts = [];
+
+  $("body")
+    .children()
+    .each((_, element) => {
+      const text = $(element).text().trim();
+
+      if (text) {
+        textParts.push(text);
+      }
+    });
+
+  return textParts.join("\n");
 }
 
 function processTextLine(line, state) {
-  const { questions } = state;
+  const { questions, images } = state;
 
   if (isImageMarker(line)) {
-    if (state.currentQuestion) {
-      state.currentQuestion.hasImage = true;
-      state.pendingImageQuestion = state.currentQuestion;
+    if (state.currentQuestion && images[state.imageIndex]) {
+      state.currentQuestion.image = images[state.imageIndex];
+      state.imageIndex += 1;
     }
 
     return;
   }
 
+  // IMPORTANTE:
+  // Si estamos dentro de una pregunta tipo multi_dropdown,
+  // primero intentamos leer sus ítems: 1), 2), 3), etc.
+  // Si no hacemos esto antes, el parser confunde esos ítems con preguntas nuevas.
   if (state.currentQuestion?.type === "multi_dropdown") {
     const item = parseMultiDropdownLine(line);
 
@@ -183,13 +248,6 @@ function processTextLine(line, state) {
   const questionData = parseQuestionLine(line);
 
   if (questionData) {
-    if (
-      state.pendingImageQuestion &&
-      state.pendingImageQuestion === state.currentQuestion
-    ) {
-      state.pendingImageQuestion = null;
-    }
-
     if (state.currentQuestion) {
       questions.push(state.currentQuestion);
     }
@@ -215,13 +273,6 @@ function processTextLine(line, state) {
 
   if (!optionData) {
     if (state.currentQuestion && state.currentQuestion.options.length > 0) {
-      if (
-        state.pendingImageQuestion &&
-        state.pendingImageQuestion === state.currentQuestion
-      ) {
-        state.pendingImageQuestion = null;
-      }
-
       questions.push(state.currentQuestion);
       state.currentQuestion = null;
     }
@@ -235,54 +286,31 @@ function processTextLine(line, state) {
 }
 
 function parseHtmlToQuestions(html) {
-  const $ = cheerio.load(html);
+  const images = extractImagesFromHtml(html);
+  const rawText = extractTextFromHtml(html);
+  const lines = getLines(rawText);
+
+  console.log("IMÁGENES DETECTADAS:", images.length);
+
+  console.log("LÍNEAS NORMALIZADAS:");
+  lines.forEach((line, index) => {
+    console.log(index + 1, "=>", JSON.stringify(line));
+  });
 
   const state = {
     questions: [],
     currentQuestion: null,
-    pendingImageQuestion: null
+    images,
+    imageIndex: 0
   };
 
-  $("body")
-    .children()
-    .each((_, element) => {
-      const currentElement = $(element);
-
-      const text = currentElement.text().trim();
-      const imageSources = currentElement
-        .find("img")
-        .map((_, img) => $(img).attr("src"))
-        .get()
-        .filter(Boolean);
-
-      if (text) {
-        const lines = getLines(text);
-
-        lines.forEach((line) => {
-          processTextLine(line, state);
-        });
-      }
-
-      imageSources.forEach((imageSrc) => {
-        processImage(imageSrc, state);
-      });
-    });
+  lines.forEach((line) => {
+    processTextLine(line, state);
+  });
 
   if (state.currentQuestion) {
     state.questions.push(state.currentQuestion);
   }
-
-  console.log("PREGUNTAS PARSEADAS:");
-  state.questions.forEach((question, index) => {
-    console.log(index + 1, {
-      question: question.question,
-      type: question.type,
-      hasImage: question.hasImage,
-      image: Boolean(question.image),
-      options: question.options.length,
-      items: question.items.length
-    });
-  });
 
   return state.questions;
 }
@@ -304,78 +332,19 @@ function isValidQuestion(question) {
   );
 }
 
-function randomizeQuestionOptions(question) {
-  if (question.type === "multi_dropdown") {
-    return {
-      type: question.type,
-      question: question.question,
-      hasImage: question.hasImage || Boolean(question.image),
-      image: question.image || null,
-      items: question.items.map((item) => ({
-        ...item,
-        options: shuffleArray(item.options)
-      }))
-    };
-  }
-
-  if (question.type === "drag_words") {
-    return {
-      ...question,
-      hasImage: question.hasImage || Boolean(question.image),
-      image: question.image || null
-    };
-  }
-
-  const shuffledOptions = shuffleArray(question.options);
-
-  const newOptions = [];
-  const newAnswers = [];
-
-  shuffledOptions.forEach((option, index) => {
-    const newLetter = OPTION_LETTERS[index];
-
-    newOptions.push({
-      letter: newLetter,
-      text: option.text
-    });
-
-    if (option.isCorrect) {
-      newAnswers.push(newLetter);
-    }
-  });
-
-  return {
-    type: question.type,
-    question: question.question,
-    hasImage: question.hasImage || Boolean(question.image),
-    image: question.image || null,
-    options: newOptions,
-    answers: newAnswers
-  };
-}
-
-function randomizeQuestionsAndOptions(questions) {
-  return shuffleArray(questions).map(randomizeQuestionOptions);
-}
-
 function formatQuestionsWithoutShuffle(questions) {
   return questions.map((question) => {
     if (question.type === "multi_dropdown") {
       return {
         type: question.type,
         question: question.question,
-        hasImage: question.hasImage || Boolean(question.image),
         image: question.image || null,
         items: question.items
       };
     }
 
     if (question.type === "drag_words") {
-      return {
-        ...question,
-        hasImage: question.hasImage || Boolean(question.image),
-        image: question.image || null
-      };
+      return question;
     }
 
     const options = [];
@@ -397,7 +366,6 @@ function formatQuestionsWithoutShuffle(questions) {
     return {
       type: question.type,
       question: question.question,
-      hasImage: question.hasImage || Boolean(question.image),
       image: question.image || null,
       options,
       answers
