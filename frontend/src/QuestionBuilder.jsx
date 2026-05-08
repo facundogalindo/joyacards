@@ -1037,69 +1037,81 @@ Podés importar un `.docx` exportado anteriormente o armado con el formato de Jo
           </div>
         )}
 
-        {(form.type === "single_choice" || form.type === "multiple_choice") && (
-          <div className="builder-panel">
-            <div className="panel-header">
-              <h3>Opciones</h3>
+      {(form.type === "single_choice" || form.type === "multiple_choice") && (
+  <div className="builder-panel">
+    <div className="panel-header">
+      <div>
+        <h3>Opciones</h3>
+        <p className="panel-helper-text">
+          {form.type === "multiple_choice"
+            ? "Podés marcar varias respuestas correctas."
+            : "Marcá una sola respuesta correcta."}
+        </p>
+      </div>
 
-              <button className="secondary-button" onClick={addOption}>
-                Agregar opción
-              </button>
-            </div>
+      <button className="secondary-button" onClick={addOption}>
+        Agregar opción
+      </button>
+    </div>
 
-            <div className="option-editor-list">
-              {form.options.map((option, index) => (
-                <div
-                  key={index}
-                  className={`option-editor-row ${
-                    option.correct ? "correct-row" : ""
-                  }`}
-                >
-                  <span className="option-letter">{getOptionLetter(index)})</span>
+    <div className="option-editor-list">
+      {form.options.map((option, index) => (
+        <div
+          key={index}
+          className={`option-card ${option.correct ? "option-card-correct" : ""}`}
+        >
+          <p className="option-card-title">Opción {index + 1}</p>
 
-                  <input
-                    value={option.text}
-                    onChange={(event) =>
-                      updateOption(index, "text", event.target.value)
-                    }
-                    placeholder="Texto de la opción"
-                  />
+          <input
+            value={option.text}
+            onChange={(event) =>
+              updateOption(index, "text", event.target.value)
+            }
+            placeholder="Texto de la opción"
+          />
 
-                  <label className="correct-toggle">
-                    <input
-                      type={
-                        form.type === "multiple_choice" ? "checkbox" : "radio"
-                      }
-                      name="builder-correct-answer"
-                      checked={option.correct}
-                      onChange={() => {
-                        if (form.type === "multiple_choice") {
-                          toggleMultipleCorrect(index);
-                        } else {
-                          markSingleCorrect(index);
-                        }
-                      }}
-                    />
+          <div className="option-card-actions">
+            <button
+              type="button"
+              className={`option-icon-button correct-icon-button ${
+                option.correct ? "active" : ""
+              }`}
+              title={
+                option.correct
+                  ? "Marcada como correcta"
+                  : "Marcar como correcta"
+              }
+              aria-label={
+                option.correct
+                  ? "Marcada como correcta"
+                  : "Marcar como correcta"
+              }
+              onClick={() => {
+                if (form.type === "multiple_choice") {
+                  toggleMultipleCorrect(index);
+                } else {
+                  markSingleCorrect(index);
+                }
+              }}
+            >
+              ✓
+            </button>
 
-                    {option.correct && (
-                      <strong className="correct-selected-label">
-                        Correcta
-                      </strong>
-                    )}
-                  </label>
-
-                  <button
-                    className="icon-button danger-button"
-                    onClick={() => removeOption(index)}
-                    type="button"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              ))}
-            </div>
+            <button
+              type="button"
+              className="option-icon-button delete-icon-button"
+              title="Eliminar opción"
+              aria-label="Eliminar opción"
+              onClick={() => removeOption(index)}
+            >
+              🗑
+            </button>
           </div>
-        )}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
         {form.type === "multi_dropdown" && (
           <div className="builder-panel">
