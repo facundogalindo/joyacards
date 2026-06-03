@@ -19,9 +19,12 @@ function normalizeWordText(rawText) {
   return rawText
     .replace(/\r/g, "\n")
     .replace(/\u00A0/g, " ")
+    // Separa preguntas con @, @@, @@@, @@@@, @@@@@ aunque vengan pegadas
     .replace(/(@{1,5}\s*\d+[\).]\s*)/g, "\n$1")
-    .replace(/([a-zA-Z]\)\s*)/g, "\n$1")
-    .replace(/(\d+\)\s*)/g, "\n$1");
+    // Separa opciones reales tipo a), b), c), pero evita romper palabras como "opciones)"
+    .replace(/(^|[\n\r\t\s:;])([a-zA-Z]\)\s*)/g, "$1\n$2")
+    // Separa items de multi_dropdown tipo 1), 2), 3)
+    .replace(/(^|[\n\r\t\s])(\d+\)\s*)/g, "$1\n$2");
 }
 
 function getLines(rawText) {
