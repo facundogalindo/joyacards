@@ -6,7 +6,7 @@ import {
   areAnswersCorrect,
   areMultiDropdownAnswersCorrect,
   formatTime,
-  shuffleArray
+  prepareQuizQuestions
 } from "./utils/quizUtils";
 
 function App() {
@@ -97,7 +97,7 @@ function App() {
       return;
     }
 
-    const selectedQuestions = shuffleArray(questions).slice(0, amount);
+    const selectedQuestions = prepareQuizQuestions(questions, amount);
 
     setQuizQuestions(selectedQuestions);
     setCurrentIndex(0);
