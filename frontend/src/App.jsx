@@ -155,6 +155,11 @@ function App() {
     }));
   }
 
+  function handleJustificationsToggle(enabled) {
+    setOpenJustificationId(null);
+    setJustificationsEnabled(enabled);
+  }
+
   function verifyAnswer() {
     const currentQuestion = quizQuestions[currentIndex];
 
@@ -512,23 +517,9 @@ function App() {
           <h2>Preguntas detectadas: {questions.length}</h2>
 
           {justificationCount > 0 && (
-            <>
-              <p className="detected-justification-count">
-                Justificaciones detectadas: {justificationCount}
-              </p>
-              <label className="justification-toggle">
-                <span>
-                  <strong>Justificaciones</strong>
-                  <small>Mostrar explicaciones después de responder</small>
-                </span>
-                <input
-                  type="checkbox"
-                  checked={justificationsEnabled}
-                  onChange={(event) => setJustificationsEnabled(event.target.checked)}
-                />
-                <span className="toggle-track" aria-hidden="true" />
-              </label>
-            </>
+            <p className="detected-justification-count">
+              Justificaciones detectadas: {justificationCount}
+            </p>
           )}
 
           {warnings.length > 0 && (
@@ -567,6 +558,21 @@ function App() {
                 Correctas: {correctCount} / {quizQuestions.length}
               </span>
             </div>
+
+            {justificationCount > 0 && (
+              <label className="justification-toggle">
+                <span>
+                  <strong>Justificaciones</strong>
+                  <small>Mostrar explicaciones después de responder</small>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={justificationsEnabled}
+                  onChange={(event) => handleJustificationsToggle(event.target.checked)}
+                />
+                <span className="toggle-track" aria-hidden="true" />
+              </label>
+            )}
 
             <div className="quiz-header">
               <div>

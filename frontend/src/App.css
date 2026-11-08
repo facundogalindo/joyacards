@@ -892,9 +892,14 @@ input {
 }
 
 .justification-toggle > span:first-child {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.justification-toggle strong {
+  text-align: center;
 }
 
 .justification-toggle small {
