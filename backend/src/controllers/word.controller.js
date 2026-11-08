@@ -10,14 +10,11 @@ async function convertWordToJsonController(req, res) {
 
     const shouldShuffle = req.query.shuffle !== "false";
 
-    const questions = await convertWordToJson(req.file.buffer, {
+    const result = await convertWordToJson(req.file.buffer, {
       shuffle: shouldShuffle
     });
 
-    return res.json({
-      total: questions.length,
-      questions
-    });
+    return res.json(result);
   } catch (error) {
     console.error("Error al convertir Word a JSON:", error);
 

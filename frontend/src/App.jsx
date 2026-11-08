@@ -7,7 +7,11 @@ import {
   areMultiDropdownAnswersCorrect,
   formatTime,
   prepareQuizQuestions
-} from "./utils/quizUtils";
+} from "./utils/quizUtils.js";
+import {
+  readJustificationsEnabled,
+  saveJustificationsEnabled
+} from "./utils/justificationPreferences.js";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -15,7 +19,12 @@ function App() {
 
   const [file, setFile] = useState(null);
   const [questions, setQuestions] = useState([]);
+  const [justificationCount, setJustificationCount] = useState(0);
+  const [warnings, setWarnings] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [justificationsEnabled, setJustificationsEnabled] = useState(
+    readJustificationsEnabled
+  );
 
   const [selectedAmount, setSelectedAmount] = useState("");
   const [quizQuestions, setQuizQuestions] = useState([]);
@@ -24,6 +33,7 @@ function App() {
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [multiDropdownAnswers, setMultiDropdownAnswers] = useState({});
   const [result, setResult] = useState(null);
+  const [openJustificationId, setOpenJustificationId] = useState(null);
 
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
@@ -38,15 +48,22 @@ function App() {
     return () => clearInterval(intervalId);
   }, [quizQuestions.length]);
 
+  useEffect(() => {
+    saveJustificationsEnabled(justificationsEnabled);
+  }, [justificationsEnabled]);
+
   function resetStateForNewFile(selectedFile) {
     setFile(selectedFile);
     setQuestions([]);
+    setJustificationCount(0);
+    setWarnings([]);
     setSelectedAmount("");
     setQuizQuestions([]);
     setCurrentIndex(0);
     setSelectedAnswers([]);
     setMultiDropdownAnswers({});
     setResult(null);
+    setOpenJustificationId(null);
     setElapsedSeconds(0);
     setCorrectCount(0);
   }
@@ -65,6 +82,8 @@ function App() {
       });
 
       setQuestions(data.questions);
+      setJustificationCount(data.justificationCount || 0);
+      setWarnings(data.warnings || []);
       setSelectedAmount(data.questions.length);
 
       setQuizQuestions([]);
@@ -72,6 +91,7 @@ function App() {
       setSelectedAnswers([]);
       setMultiDropdownAnswers({});
       setResult(null);
+      setOpenJustificationId(null);
       setElapsedSeconds(0);
       setCorrectCount(0);
 
@@ -104,6 +124,7 @@ function App() {
     setSelectedAnswers([]);
     setMultiDropdownAnswers({});
     setResult(null);
+    setOpenJustificationId(null);
     setElapsedSeconds(0);
     setCorrectCount(0);
   }
@@ -137,7 +158,7 @@ function App() {
   function verifyAnswer() {
     const currentQuestion = quizQuestions[currentIndex];
 
-    let isCorrect = false;
+    let isCorrect;
 
     if (currentQuestion.type === "multi_dropdown") {
       const totalItems = currentQuestion.items.length;
@@ -183,6 +204,7 @@ function App() {
       setSelectedAnswers([]);
       setMultiDropdownAnswers({});
       setResult(null);
+      setOpenJustificationId(null);
       return;
     }
 
@@ -195,6 +217,7 @@ function App() {
     setSelectedAnswers([]);
     setMultiDropdownAnswers({});
     setResult(null);
+    setOpenJustificationId(null);
     setElapsedSeconds(0);
     setCorrectCount(0);
   }
@@ -205,6 +228,7 @@ function App() {
     setSelectedAnswers([]);
     setMultiDropdownAnswers({});
     setResult(null);
+    setOpenJustificationId(null);
     setElapsedSeconds(0);
     setCorrectCount(0);
   }
@@ -212,12 +236,15 @@ function App() {
   function clearAll() {
     setFile(null);
     setQuestions([]);
+    setJustificationCount(0);
+    setWarnings([]);
     setSelectedAmount("");
     setQuizQuestions([]);
     setCurrentIndex(0);
     setSelectedAnswers([]);
     setMultiDropdownAnswers({});
     setResult(null);
+    setOpenJustificationId(null);
     setElapsedSeconds(0);
     setCorrectCount(0);
   }
@@ -237,31 +264,93 @@ function App() {
   function renderMultiDropdownQuestion(currentQuestion) {
     return (
       <div className="multi-dropdown-list">
-        {currentQuestion.items.map((item) => (
-          <div key={item.id} className="multi-dropdown-item">
-            <p>
-              <strong>{item.id}.</strong> {item.text}
-            </p>
+        {currentQuestion.items.map((item) => {
+          const options = item.options.map((option, index) =>
+            typeof option === "string"
+              ? { id: `${item.id}-option-${index + 1}`, text: option }
+              : option
+          );
+          const selectedOption = options.find(
+            (option) => option.id === multiDropdownAnswers[item.id]
+          );
+          const correctOption = item.answerOptionId
+            ? options.find((option) => option.id === item.answerOptionId)
+            : options.find((option) => option.text === item.answer);
+          const isSelectedCorrect =
+            selectedOption && selectedOption.id === correctOption?.id;
+          const justificationId = `dropdown-${currentIndex}-${item.id}`;
 
-            <select
-              value={multiDropdownAnswers[item.id] || ""}
-              onChange={(event) =>
-                handleMultiDropdownChange(item.id, event.target.value)
-              }
-              disabled={!!result}
-              className="question-select"
-            >
-              <option value="">Seleccionar...</option>
-
-              {item.options.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-        ))}
+          return (
+            <div key={item.id} className="multi-dropdown-item">
+              <p><strong>{item.id}.</strong> {item.text}</p>
+              <div
+                className="dropdown-answer-review"
+                onPointerEnter={(event) => event.pointerType === "mouse" && result && justificationsEnabled && selectedOption?.justification && setOpenJustificationId(justificationId)}
+                onPointerLeave={(event) => event.pointerType === "mouse" && setOpenJustificationId(null)}
+                onPointerUp={(event) => {
+                  if (
+                    event.pointerType === "touch" &&
+                    result &&
+                    justificationsEnabled &&
+                    selectedOption?.justification &&
+                    !event.target.closest(".justification-trigger") &&
+                    !event.target.closest(".justification-card")
+                  ) {
+                    setOpenJustificationId((open) => open === justificationId ? null : justificationId);
+                  }
+                }}
+                onClick={(event) => {
+                  if (event.detail === 0 && result && justificationsEnabled && selectedOption?.justification) {
+                    setOpenJustificationId((open) => open === justificationId ? null : justificationId);
+                  }
+                }}
+              >
+                <select
+                  value={multiDropdownAnswers[item.id] || ""}
+                  onChange={(event) => handleMultiDropdownChange(item.id, event.target.value)}
+                  disabled={!!result}
+                  className="question-select"
+                >
+                  <option value="">Seleccionar...</option>
+                  {options.map((option) => (
+                    <option key={option.id} value={option.id}>{option.text}</option>
+                  ))}
+                </select>
+                {result && selectedOption?.justification && justificationsEnabled && (
+                  renderJustification(selectedOption.justification, isSelectedCorrect, justificationId)
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
+    );
+  }
+
+  function renderJustification(text, isCorrect, id) {
+    if (!result || !justificationsEnabled || !text?.trim()) return null;
+    const isOpen = openJustificationId === id;
+
+    return (
+      <>
+        <button
+          type="button"
+          className={`justification-trigger ${isCorrect ? "is-correct" : "is-incorrect"}`}
+          aria-label="Ver justificación"
+          aria-expanded={isOpen}
+          onClick={(event) => {
+            event.stopPropagation();
+            setOpenJustificationId((open) => open === id ? null : id);
+          }}
+        >
+          ?
+        </button>
+        {isOpen && (
+          <div className={`justification-card ${isCorrect ? "is-correct" : "is-incorrect"}`}>
+            {text}
+          </div>
+        )}
+      </>
     );
   }
 
@@ -275,32 +364,51 @@ function App() {
 
     return (
       <div className="options">
-        {currentQuestion.options.map((option) => (
-          <label
-            key={option.letter}
-            className={`option selectable ${
-              selectedAnswers.includes(option.letter) ? "selected" : ""
-            }`}
-          >
-            <input
-              type={inputType}
-              name={`question-${currentIndex}`}
-              checked={selectedAnswers.includes(option.letter)}
-              onChange={() => {
-                if (currentQuestion.type === "multiple_choice") {
-                  toggleMultipleAnswer(option.letter);
-                } else {
-                  selectSingleAnswer(option.letter);
+        {currentQuestion.options.map((option) => {
+          const selected = selectedAnswers.includes(option.letter);
+          const isCorrect =
+            typeof option.isCorrect === "boolean"
+              ? option.isCorrect
+              : currentQuestion.answers.includes(option.letter);
+          const justificationId = `option-${currentIndex}-${option.id || option.letter}`;
+
+          return (
+            <div
+              key={option.id || option.letter}
+              className="review-option-justification"
+              onPointerEnter={(event) => event.pointerType === "mouse" && result && justificationsEnabled && selected && option.justification && setOpenJustificationId(justificationId)}
+              onPointerLeave={(event) => event.pointerType === "mouse" && setOpenJustificationId(null)}
+              onPointerUp={(event) => {
+                if (event.pointerType === "touch" && result && selected && option.justification && justificationsEnabled && !event.target.closest(".justification-trigger") && !event.target.closest(".justification-card")) {
+                  setOpenJustificationId((open) => open === justificationId ? null : justificationId);
                 }
               }}
-              disabled={!!result}
-            />
-
-            <span>
-              <strong>{option.letter}.</strong> {option.text}
-            </span>
-          </label>
-        ))}
+              onClick={(event) => {
+                if (event.detail === 0 && result && selected && option.justification && justificationsEnabled) {
+                  setOpenJustificationId((open) => open === justificationId ? null : justificationId);
+                }
+              }}
+            >
+              <label className={`option selectable ${selected ? "selected" : ""}`}>
+                <input
+                  type={inputType}
+                  name={`question-${currentIndex}`}
+                  checked={selected}
+                  onChange={() => {
+                    if (currentQuestion.type === "multiple_choice") {
+                      toggleMultipleAnswer(option.letter);
+                    } else {
+                      selectSingleAnswer(option.letter);
+                    }
+                  }}
+                  disabled={!!result}
+                />
+                <span><strong>{option.letter}.</strong> {option.text}</span>
+              </label>
+              {selected && renderJustification(option.justification, isCorrect, justificationId)}
+            </div>
+          );
+        })}
       </div>
     );
   }
@@ -309,11 +417,16 @@ function App() {
     if (currentQuestion.type === "multi_dropdown") {
       return (
         <ul>
-          {currentQuestion.items.map((item) => (
-            <li key={item.id}>
-              {item.id}. {item.text} → <strong>{item.answer}</strong>
-            </li>
-          ))}
+          {currentQuestion.items.map((item) => {
+            const correctOption = item.answerOptionId
+              ? item.options.find((option) => option.id === item.answerOptionId)
+              : null;
+            return (
+              <li key={item.id}>
+                {item.id}. {item.text} → <strong>{correctOption?.text || item.answer}</strong>
+              </li>
+            );
+          })}
         </ul>
       );
     }
@@ -321,7 +434,11 @@ function App() {
     return (
       <ul>
         {currentQuestion.options
-          .filter((option) => currentQuestion.answers.includes(option.letter))
+          .filter((option) =>
+            typeof option.isCorrect === "boolean"
+              ? option.isCorrect
+              : currentQuestion.answers.includes(option.letter)
+          )
           .map((option) => (
             <li key={option.letter}>
               {option.letter}. {option.text}
@@ -393,6 +510,34 @@ function App() {
       {questions.length > 0 && quizQuestions.length === 0 && (
         <section className="card">
           <h2>Preguntas detectadas: {questions.length}</h2>
+
+          {justificationCount > 0 && (
+            <>
+              <p className="detected-justification-count">
+                Justificaciones detectadas: {justificationCount}
+              </p>
+              <label className="justification-toggle">
+                <span>
+                  <strong>Justificaciones</strong>
+                  <small>Mostrar explicaciones después de responder</small>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={justificationsEnabled}
+                  onChange={(event) => setJustificationsEnabled(event.target.checked)}
+                />
+                <span className="toggle-track" aria-hidden="true" />
+              </label>
+            </>
+          )}
+
+          {warnings.length > 0 && (
+            <div className="justification-warning justification-warning-general" role="status">
+              ⚠ Se encontraron {warnings.length} justificaciones con advertencias de formato.
+              {" "}
+              Preguntas afectadas: {[...new Set(warnings.map((warning) => warning.questionNumber))].join(", ")}.
+            </div>
+          )}
 
           <label className="field">
             Cantidad de preguntas:

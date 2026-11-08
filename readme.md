@@ -342,3 +342,56 @@ Funcionalidades implementadas:
 ## 👤 Autor
 
 Desarrollado por [Facundo Galindo](https://github.com/facundogalindo).
+
+---
+
+## Justificaciones por alternativa
+
+`@` (Verdadero/Falso), `@@` (opción única), `@@@` (opción múltiple) y `@@@@` (varios desplegables) admiten una justificación opcional en cada alternativa. El tipo `@@@@@` (arrastrar palabras) conserva su comportamiento y no usa justificaciones.
+
+En preguntas de opciones y Verdadero/Falso, agregá el bloque inmediatamente después de la alternativa:
+
+```txt
+@@ 1. ¿Qué protocolo usa TCP en el puerto 80?
+a) FTP
+[[JUSTIFICACION]]
+FTP usa otros puertos.
+[[FIN_JUSTIFICACION]]
+b) HTTP *
+[[JUSTIFICACION]]
+HTTP usa TCP y normalmente escucha en el puerto 80.
+[[FIN_JUSTIFICACION]]
+```
+
+El texto entre los marcadores es texto plano y puede ocupar varias líneas. La justificación se asocia a la alternativa que la precede; no depende de la letra que tenga después de mezclar las opciones. Se puede omitir por completo. Un bloque vacío también se ignora.
+
+Para `@@@@`, cada justificación nombra el número del ítem y de la alternativa, en el orden escrito en Word:
+
+```txt
+@@@@ 5. Complete:
+1) DNS utiliza [TCP / UDP* / Ambos]
+[[JUSTIFICACION_ITEM_1_OPCION_1]]
+TCP no es la opción esperada.
+[[FIN_JUSTIFICACION]]
+[[JUSTIFICACION_ITEM_1_OPCION_2]]
+UDP es correcto.
+[[FIN_JUSTIFICACION]]
+[[JUSTIFICACION_ITEM_1_OPCION_3]]
+Ambos no corresponde.
+[[FIN_JUSTIFICACION]]
+```
+
+El creador permite escribir, editar y quitar justificaciones, agregar alternativas libres a cada desplegable y marcar cuál es correcta. **Ver formato** muestra la sintaxis Word y **Exportar archivo** genera el mismo formato canónico. Los documentos antiguos sin estos marcadores siguen siendo válidos.
+
+Si un bloque no cierra o está duplicado, la pregunta se conserva: se descarta el bloque problemático, se conserva la primera justificación válida y la importación informa las preguntas afectadas. Las explicaciones válidas aparecen como tarjetas después de verificar y solo para las alternativas elegidas. En la pantalla previa al simulacro se puede activar o desactivar esta función; la preferencia se guarda en el navegador y comienza activada.
+
+El endpoint `POST /api/word/to-json` devuelve `total`, `justificationCount`, `warnings` y `questions`. Cada opción conserva su identidad, su estado correcto y, si existe, su propiedad `justification`; los ítems de `@@@@` también incluyen `answerOptionId` para identificar la respuesta incluso si se repite el texto.
+
+Para ejecutar las pruebas del parser:
+
+```bash
+cd backend
+npm test
+```
+
+Las pruebas de conversión del creador y el armado del DOCX se ejecutan desde `frontend` con `npm test`.
