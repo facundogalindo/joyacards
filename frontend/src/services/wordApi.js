@@ -8,20 +8,39 @@ export async function uploadWordToJson(file, options = {}) {
 
   const queryParams = shuffle ? "" : "?shuffle=false";
 
-  let response;
+  const maxAttempts = 3;
+  const transientStatuses = [502, 503, 504];
+  let response = null;
+  let responseText = "";
 
-  try {
-    response = await fetch(`${apiUrl}/api/word/to-json${queryParams}`, {
-      method: "POST",
-      body: formData
-    });
-  } catch {
-    throw new Error(
-      "No se pudo conectar con el servidor de conversión. Puede estar temporalmente no disponible o la solicitud fue bloqueada por la red/CORS. Probá nuevamente en unos minutos."
-    );
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      response = await fetch(`${apiUrl}/api/word/to-json${queryParams}`, {
+        method: "POST",
+        body: formData
+      });
+      responseText = await response.text();
+
+      if (
+        transientStatuses.includes(response.status) &&
+        attempt < maxAttempts
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 3000));
+        continue;
+      }
+
+      break;
+    } catch {
+      if (attempt === maxAttempts) {
+        throw new Error(
+          "No se pudo conectar con el servidor de conversión después de varios intentos. Puede estar reiniciándose o haber un problema de red/CORS. Probá nuevamente en unos segundos."
+        );
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, attempt * 3000));
+    }
   }
 
-  const responseText = await response.text();
   let data = null;
 
   if (responseText.trim()) {
@@ -37,7 +56,7 @@ export async function uploadWordToJson(file, options = {}) {
       throw new Error(data.message);
     }
 
-    if ([502, 503, 504].includes(response.status)) {
+    if (transientStatuses.includes(response.status)) {
       throw new Error(
         `El servidor de conversión no está disponible (HTTP ${response.status}). Esperá un momento y volvé a procesar el archivo.`
       );
