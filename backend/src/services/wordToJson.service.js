@@ -1,7 +1,9 @@
 const mammoth = require("mammoth");
 const cheerio = require("cheerio");
+const { createHash } = require("node:crypto");
 
 const OPTION_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const IMAGE_REFERENCE_PREFIX = "joyacards-image://";
 const JUSTIFICATION_START = "[[JUSTIFICACION]]";
 const JUSTIFICATION_END = "[[FIN_JUSTIFICACION]]";
 const ITEM_JUSTIFICATION_PATTERN = /^\[\[JUSTIFICACION_ITEM_(\d+)_OPCION_(\d+)\]\]$/i;
@@ -154,22 +156,71 @@ function createQuestion(type, question, sourceNumber, ordinal) {
 }
 
 async function convertWordToHtml(fileBuffer) {
+  let nextImageId = 0;
+  const imageReferences = new Map();
+  const imagesByDigest = new Map();
   const result = await mammoth.convertToHtml(
     {
       buffer: fileBuffer
     },
     {
       convertImage: mammoth.images.imgElement(async (image) => {
-        const imageBuffer = await image.read("base64");
+        const imageBuffer = await image.readAsBuffer();
+        const digest = createHash("sha256")
+          .update(image.contentType)
+          .update(imageBuffer)
+          .digest("hex");
+        const imageId = nextImageId;
+        nextImageId += 1;
+
+        imageReferences.set(imageId, digest);
+
+        if (!imagesByDigest.has(digest)) {
+          imagesByDigest.set(digest, {
+            contentType: image.contentType,
+            buffer: imageBuffer,
+            dataUri: null
+          });
+        }
 
         return {
-          src: `data:${image.contentType};base64,${imageBuffer}`
+          src: `${IMAGE_REFERENCE_PREFIX}${imageId}`
         };
       })
     }
   );
 
-  return result.value;
+  return {
+    html: result.value,
+    imageReferences,
+    imagesByDigest
+  };
+}
+
+function attachImageData(questions, imageReferences, imagesByDigest) {
+  questions.forEach((question) => {
+    const imageReference = question.image?.match(/^joyacards-image:\/\/(\d+)$/);
+
+    if (!imageReference) return;
+
+    const digest = imageReferences.get(Number(imageReference[1]));
+    const image = imagesByDigest.get(digest);
+
+    if (!image) {
+      question.image = null;
+      question.hasImage = false;
+      return;
+    }
+
+    if (!image.dataUri) {
+      image.dataUri = `data:${image.contentType};base64,${image.buffer.toString("base64")}`;
+    }
+
+    question.image = image.dataUri;
+  });
+
+  imageReferences.clear();
+  imagesByDigest.clear();
 }
 
 function processImage(imageSrc, state) {
@@ -667,9 +718,14 @@ function getFinalWarnings(warnings, validQuestions) {
 
 async function convertWordToJson(fileBuffer, options = {}) {
   const { shuffle = true } = options;
-  const html = await convertWordToHtml(fileBuffer);
-  const parsed = parseHtmlToQuestions(html);
+  const converted = await convertWordToHtml(fileBuffer);
+  const parsed = parseHtmlToQuestions(converted.html);
   const validQuestions = parsed.questions.filter(isValidQuestion);
+  attachImageData(
+    validQuestions,
+    converted.imageReferences,
+    converted.imagesByDigest
+  );
   const questions = shuffle
     ? shuffleArray(validQuestions).map(randomizeQuestionOptions)
     : formatQuestionsWithoutShuffle(validQuestions);
