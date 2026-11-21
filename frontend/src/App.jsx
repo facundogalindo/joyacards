@@ -12,10 +12,37 @@ import {
   readJustificationsEnabled,
   saveJustificationsEnabled
 } from "./utils/justificationPreferences.js";
+import {
+  readThemePreference,
+  saveThemePreference
+} from "./utils/themePreferences.js";
+
+function AppFrame({ theme, onThemeToggle, children }) {
+  const nextThemeLabel = theme === "dark" ? "Modo claro" : "Modo oscuro";
+
+  return (
+    <div className="app-shell" data-theme={theme}>
+      <div className="theme-toolbar">
+        <button
+          className="theme-toggle"
+          type="button"
+          onClick={onThemeToggle}
+          aria-label={`Cambiar a ${nextThemeLabel.toLowerCase()}`}
+          aria-pressed={theme === "dark"}
+        >
+          <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+          <span>{nextThemeLabel}</span>
+        </button>
+      </div>
+      {children}
+    </div>
+  );
+}
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
   const [showWelcome, setShowWelcome] = useState(true);
+  const [theme, setTheme] = useState(readThemePreference);
 
   const [file, setFile] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -51,6 +78,12 @@ function App() {
   useEffect(() => {
     saveJustificationsEnabled(justificationsEnabled);
   }, [justificationsEnabled]);
+
+  function toggleTheme() {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    saveThemePreference(nextTheme);
+    setTheme(nextTheme);
+  }
 
   function resetStateForNewFile(selectedFile) {
     setFile(selectedFile);
@@ -456,27 +489,34 @@ function App() {
   const currentQuestion = quizQuestions[currentIndex];
 
   if (currentPage === "builder") {
-    return <QuestionBuilder onBack={() => setCurrentPage("home")} />;
+    return (
+      <AppFrame theme={theme} onThemeToggle={toggleTheme}>
+        <QuestionBuilder onBack={() => setCurrentPage("home")} />
+      </AppFrame>
+    );
   }
 
   if (showWelcome) {
     return (
-      <main className="container">
-        <section className="card welcome-card">
-          <img
-            src="/simulacroparajoyas.png"
-            alt="Simulacro para joyas"
-            className="welcome-image"
-          />
+      <AppFrame theme={theme} onThemeToggle={toggleTheme}>
+        <main className="container">
+          <section className="card welcome-card">
+            <img
+              src="/simulacroparajoyas.png"
+              alt="Simulacro para joyas"
+              className="welcome-image"
+            />
 
-          <button onClick={() => setShowWelcome(false)}>Comenzar</button>
-        </section>
-      </main>
+            <button onClick={() => setShowWelcome(false)}>Comenzar</button>
+          </section>
+        </main>
+      </AppFrame>
     );
   }
 
   return (
-    <main className="container">
+    <AppFrame theme={theme} onThemeToggle={toggleTheme}>
+      <main className="container">
       {quizQuestions.length === 0 && (
         <section className="card">
           <h1>JoyaCards</h1>
@@ -628,7 +668,8 @@ function App() {
           )}
         </section>
       )}
-    </main>
+      </main>
+    </AppFrame>
   );
 }
 
