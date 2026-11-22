@@ -6,8 +6,8 @@ const entriesByDigest = new Map(
   imageAudit.entries.map((entry) => [entry.embeddedImageSha256, entry])
 );
 
-export function getQuestionImageVariants(imageDigest, embeddedImage) {
+export function getQuestionImageVariants(imageDigest, embeddedImage, questionText = "") {
   const entry = entriesByDigest.get(imageDigest);
   const assets = entry ? redesParcial3ImageAssets[entry.id] : null;
-  return buildImageVariants({ embeddedImage, entry, assets });
+  return buildImageVariants({ embeddedImage, entry, assets, questionText });
 }

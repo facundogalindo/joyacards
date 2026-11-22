@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="650" viewBox="0 0 1400 650" role="img" aria-labelledby="title desc">
+  <title id="title">Variante reconstruida para práctica de netstat basada en recuerdo</title>
+  <desc id="desc">Representación separada de la fotografía original. Muestra únicamente TCP 22 y TCP 443 en LISTEN, y UDP 8280 con estado vacío, según la aclaración de la pregunta 30.</desc>
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #eaf0f8; }
+      .mono { font-family: Consolas, "Courier New", monospace; }
+      .header { fill: #b9c8dc; font-size: 19px; }
+      .cell { fill: #f8fafc; font-size: 23px; }
+      .state { fill: #bbf7d0; font-size: 23px; font-weight: 700; }
+      .tag { fill: #7c2d12; font-size: 18px; font-weight: 700; }
+    </style>
+  </defs>
+  <rect width="1400" height="650" rx="22" fill="#101827"/>
+  <text id="title" x="55" y="64" font-size="32" font-weight="700">NETSTAT · ESCENARIO DE PRÁCTICA RECORDADO</text>
+  <rect x="925" y="82" width="415" height="44" rx="22" fill="#ffedd5"/>
+  <text x="1132" y="111" text-anchor="middle" class="tag">VARIANTE RECONSTRUIDA PARA PRÁCTICA</text>
+  <text x="55" y="112" fill="#fca5a5" font-size="18" font-weight="700">No es una transcripción de la fotografía original.</text>
+
+  <rect x="45" y="155" width="1310" height="330" rx="12" fill="#050a12" stroke="#334155" stroke-width="2"/>
+  <text x="78" y="207" class="mono header">PROTOCOLO        PUERTO MENCIONADO        ESTADO MENCIONADO</text>
+  <path d="M70 225H1330" stroke="#334155" stroke-width="2"/>
+  <text x="95" y="284" class="mono cell">TCP</text>
+  <text x="480" y="284" class="mono cell">22</text>
+  <text x="920" y="284" class="mono state">LISTEN</text>
+  <path d="M70 306H1330" stroke="#1e293b" stroke-width="2"/>
+  <text x="95" y="354" class="mono cell">TCP</text>
+  <text x="480" y="354" class="mono cell">443</text>
+  <text x="920" y="354" class="mono state">LISTEN</text>
+  <path d="M70 376H1330" stroke="#1e293b" stroke-width="2"/>
+  <text x="95" y="424" class="mono cell">UDP</text>
+  <text x="480" y="424" class="mono cell">8280</text>
+  <text x="920" y="424" class="mono cell">[estado vacío]</text>
+  <text x="55" y="548" fill="#b9c8dc" font-size="18">Las direcciones y las colas no se especifican en el recuerdo; no se agregan.</text>
+  <text x="55" y="584" fill="#b9c8dc" font-size="18">Conservar la fotografía original para estudiar el examen real.</text>
+</svg>

@@ -3,7 +3,7 @@ import ImageLightbox from "./ImageLightbox.jsx";
 import { getQuestionImageVariants } from "../data/redesParcial3ImageCatalog.js";
 import { computeImageDigest } from "../data/imageViewerUtils.js";
 
-function QuestionImageViewer({ image, altText, questionKey }) {
+function QuestionImageViewer({ image, altText, questionKey, questionText = "" }) {
   const fallbackVariants = useMemo(() => [{
     id: "original",
     label: "Imagen original",
@@ -18,7 +18,7 @@ function QuestionImageViewer({ image, altText, questionKey }) {
     let isCurrent = true;
     computeImageDigest(image)
       .then((digest) => {
-        const nextVariants = getQuestionImageVariants(digest, image);
+        const nextVariants = getQuestionImageVariants(digest, image, questionText);
         if (isCurrent) setVariants(nextVariants);
       })
       .catch(() => {
@@ -28,7 +28,7 @@ function QuestionImageViewer({ image, altText, questionKey }) {
     return () => {
       isCurrent = false;
     };
-  }, [image, fallbackVariants]);
+  }, [image, questionText, fallbackVariants]);
 
   const activeVariant =
     variants.find((variant) => variant.id === activeVariantId) || variants[0];
@@ -66,6 +66,10 @@ function QuestionImageViewer({ image, altText, questionKey }) {
             >
               {variant.id === "reconstruction"
                 ? "Ver reconstrucción"
+                : variant.id === "partial-reconstruction"
+                  ? "Ver reconstrucción parcial"
+                  : variant.id === "practice-variant"
+                    ? "Ver variante reconstruida para práctica"
                 : variant.id === "original"
                   ? "Ver fotografía original"
                   : variant.id === "enhanced"

@@ -10,6 +10,9 @@ import tftpEnhanced from "../../../content/redes-parcial-3-2026/assets/mejoradas
 import firewallReconstruction from "../../../content/redes-parcial-3-2026/assets/reconstrucciones/reconstruccion-firewall-telnet.svg";
 import tftpReconstruction from "../../../content/redes-parcial-3-2026/assets/reconstrucciones/reconstruccion-tftp.svg";
 import nslookupReconstruction from "../../../content/redes-parcial-3-2026/assets/reconstrucciones/reconstruccion-nslookup-instagram.svg";
+import routePartialReconstruction from "../../../content/redes-parcial-3-2026/assets/reconstrucciones/reconstruccion-show-ip-route-parcial.svg";
+import netstatPartialReconstruction from "../../../content/redes-parcial-3-2026/assets/reconstrucciones/reconstruccion-netstat-parcial.svg";
+import netstatPracticeVariant from "../../../content/redes-parcial-3-2026/assets/reconstrucciones/netstat-variante-recordada-practica.svg";
 
 export const redesParcial3ImageAssets = {
   "firewall-telnet": {
@@ -18,10 +21,13 @@ export const redesParcial3ImageAssets = {
     reconstruction: firewallReconstruction
   },
   netstat: {
-    original: netstatOriginal
+    original: netstatOriginal,
+    reconstruction: netstatPartialReconstruction,
+    practiceVariant: netstatPracticeVariant
   },
   "show-ip-route": {
-    original: routeOriginal
+    original: routeOriginal,
+    reconstruction: routePartialReconstruction
   },
   tftp: {
     original: tftpOriginal,

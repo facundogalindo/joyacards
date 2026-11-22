@@ -38,7 +38,7 @@ export async function computeImageDigest(dataUrl) {
   return digestPromise;
 }
 
-export function buildImageVariants({ embeddedImage, entry, assets }) {
+export function buildImageVariants({ embeddedImage, entry, assets, questionText = "" }) {
   if (!entry || !assets?.original) {
     return [{
       id: "original",
@@ -72,16 +72,36 @@ export function buildImageVariants({ embeddedImage, entry, assets }) {
     });
   }
 
+  const reconstructionStatus = entry.reconstructionStatus;
+  const isPartialReconstruction = reconstructionStatus === "PARCIAL VERIFICADA";
+  const isCompleteReconstruction =
+    reconstructionStatus === "COMPLETA VERIFICADA" || reconstructionStatus === "APROBADA";
+
   if (
-    entry.reconstructionStatus === "APROBADA" &&
+    (isCompleteReconstruction || isPartialReconstruction) &&
     entry.reconstructionFile &&
     assets.reconstruction
   ) {
     variants.push({
-      id: "reconstruction",
-      label: "Reconstrucción visual para práctica",
+      id: isPartialReconstruction ? "partial-reconstruction" : "reconstruction",
+      label: isPartialReconstruction
+        ? "Reconstrucción parcial — contiene elementos no confirmados"
+        : "Reconstrucción visual para práctica",
       src: assets.reconstruction,
-      kind: "reconstruction"
+      kind: isPartialReconstruction ? "partial-reconstruction" : "reconstruction"
+    });
+  }
+
+  if (
+    entry.id === "netstat" &&
+    /\[RECUERDO\s*\|\s*VARIANTE NETSTAT/i.test(questionText) &&
+    assets.practiceVariant
+  ) {
+    variants.push({
+      id: "practice-variant",
+      label: "VARIANTE RECONSTRUIDA PARA PRÁCTICA",
+      src: assets.practiceVariant,
+      kind: "practice-variant"
     });
   }
 

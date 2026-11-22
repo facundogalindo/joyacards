@@ -639,6 +639,7 @@ function App() {
               questionKey={currentIndex}
               image={currentQuestion.image}
               altText="Imagen de la pregunta"
+              questionText={currentQuestion.question}
             />
           )}
 

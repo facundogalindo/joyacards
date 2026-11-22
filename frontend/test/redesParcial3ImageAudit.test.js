@@ -19,6 +19,7 @@ const documentPath = path.join(
 const EXPECTED_SEMANTIC_DIGEST =
   "9e9efc0a2741bdc58fcb04bb34a80f3aa9128706d1ccf72c5e9ac071968eeb3e";
 
+const { buildImageVariants } = await import("../src/data/imageViewerUtils.js");
 const require = (await import("node:module")).createRequire(import.meta.url);
 const { convertWordToJson } = require("../../backend/src/services/wordToJson.service.js");
 
@@ -72,7 +73,7 @@ test("the imported Networks DOCX matches the preserved 30-card semantic baseline
   assert.equal(imageAudit.questionnaireBaseline.semanticSha256, EXPECTED_SEMANTIC_DIGEST);
 });
 
-test("every embedded picture has an exact original photo and an audited reconstruction status", async () => {
+test("all five images have preserved originals, verified reconstructions, and visual comparisons", async () => {
   const result = await convertWordToJson(await readFile(documentPath), {
     shuffle: false
   });
@@ -89,12 +90,26 @@ test("every embedded picture has an exact original photo and an audited reconstr
   );
 
   for (const entry of imageAudit.entries) {
-    assert.ok(["APROBADA", "PARCIAL", "NO RECONSTRUIBLE"].includes(entry.reconstructionStatus));
+    assert.ok(["COMPLETA VERIFICADA", "PARCIAL VERIFICADA"].includes(entry.reconstructionStatus));
     assert.equal(
       await fileHash(entry.originalPhotoFile),
       entry.originalPhotoSha256,
       entry.id + ": original photo hash"
     );
+    assert.equal(
+      await fileHash(entry.reconstructionFile),
+      entry.reconstructionSha256,
+      entry.id + ": reconstruction hash"
+    );
+    assert.ok(entry.comparisonFile);
+    assert.equal(
+      await fileHash(entry.comparisonFile),
+      entry.comparisonSha256,
+      entry.id + ": visual comparison hash"
+    );
+    const source = await readFile(path.join(auditDirectory, entry.reconstructionFile), "utf8");
+    await readFile(path.join(auditDirectory, entry.comparisonFile));
+    assert.match(source, /<svg\b/);
 
     if (entry.enhancedImageFile) {
       assert.equal(
@@ -104,26 +119,87 @@ test("every embedded picture has an exact original photo and an audited reconstr
       );
       assert.ok(entry.enhancementComparisonFile);
       await readFile(path.join(auditDirectory, entry.enhancementComparisonFile));
+      assert.equal(
+        await fileHash(entry.enhancementComparisonFile),
+        entry.enhancementComparisonSha256,
+        entry.id + ": enhancement comparison hash"
+      );
     }
 
-    if (entry.reconstructionStatus === "APROBADA") {
-      assert.ok(entry.reconstructionFile);
-      assert.ok(entry.comparisonFile);
-      const source = await readFile(path.join(auditDirectory, entry.reconstructionFile), "utf8");
-      await readFile(path.join(auditDirectory, entry.comparisonFile));
-      assert.match(source, /<svg\b/);
-    } else {
-      assert.equal(entry.reconstructionFile, null);
-      assert.equal(entry.comparisonFile, null);
+    if (entry.reconstructionStatus === "PARCIAL VERIFICADA") {
+      assert.match(source, /PARCIAL VERIFICADA/);
+      assert.match(source, /no legible|no verificable|no se pudo verificar/i);
     }
   }
 
+  const routeEntry = imageAudit.entries.find((entry) => entry.id === "show-ip-route");
+  const netstatEntry = imageAudit.entries.find((entry) => entry.id === "netstat");
   assert.equal(
-    imageAudit.entries.find((entry) => entry.id === "netstat").reconstructionStatus,
-    "NO RECONSTRUIBLE"
+    routeEntry.reconstructionStatus,
+    "PARCIAL VERIFICADA"
   );
   assert.equal(
-    imageAudit.entries.find((entry) => entry.id === "show-ip-route").reconstructionStatus,
-    "NO RECONSTRUIBLE"
+    netstatEntry.reconstructionStatus,
+    "PARCIAL VERIFICADA"
+  );
+
+  const routeQuestions = result.questions.slice(13, 17);
+  assert.equal(new Set(routeQuestions.map((question) => imageDigest(question.image))).size, 1);
+  assert.equal(imageDigest(routeQuestions[0].image), routeEntry.embeddedImageSha256);
+  for (const question of routeQuestions) {
+    const variants = buildImageVariants({
+      embeddedImage: question.image,
+      entry: routeEntry,
+      assets: {
+        original: routeEntry.originalPhotoFile,
+        reconstruction: routeEntry.reconstructionFile
+      },
+      questionText: question.question
+    });
+    assert.equal(variants.find((variant) => variant.id === "original").src, routeEntry.originalPhotoFile);
+    assert.equal(
+      variants.find((variant) => variant.id === "partial-reconstruction").src,
+      routeEntry.reconstructionFile
+    );
+  }
+  const netstatQuestions = result.questions.slice(28, 30);
+  assert.equal(new Set(netstatQuestions.map((question) => imageDigest(question.image))).size, 1);
+  assert.equal(imageDigest(netstatQuestions[0].image), netstatEntry.embeddedImageSha256);
+  assert.match(netstatQuestions[0].question, /^\[FOTO \| NETSTAT ORIGINAL/);
+  assert.match(netstatQuestions[1].question, /^\[RECUERDO \| VARIANTE NETSTAT/);
+  const netstatVariants = netstatQuestions.map((question) => buildImageVariants({
+    embeddedImage: question.image,
+    entry: netstatEntry,
+    assets: {
+      original: netstatEntry.originalPhotoFile,
+      reconstruction: netstatEntry.reconstructionFile,
+      practiceVariant: netstatEntry.practiceVariantFile
+    },
+    questionText: question.question
+  }));
+  for (const variants of netstatVariants) {
+    assert.equal(variants.find((variant) => variant.id === "original").src, netstatEntry.originalPhotoFile);
+    assert.equal(
+      variants.find((variant) => variant.id === "partial-reconstruction").src,
+      netstatEntry.reconstructionFile
+    );
+  }
+  assert.equal(
+    netstatVariants[0].some((variant) => variant.id === "practice-variant"),
+    false
+  );
+  assert.equal(
+    netstatVariants[1].find((variant) => variant.id === "practice-variant").label,
+    "VARIANTE RECONSTRUIDA PARA PRÁCTICA"
+  );
+
+  assert.equal(
+    await fileHash(netstatEntry.practiceVariantFile),
+    netstatEntry.practiceVariantSha256
+  );
+  await readFile(path.join(auditDirectory, netstatEntry.practiceVariantComparisonFile));
+  assert.equal(
+    await fileHash(netstatEntry.practiceVariantComparisonFile),
+    netstatEntry.practiceVariantComparisonSha256
   );
 });

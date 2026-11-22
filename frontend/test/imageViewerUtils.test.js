@@ -26,13 +26,13 @@ test("zoom stays within the supported limits", () => {
   assert.equal(clampZoom(20), IMAGE_MAX_ZOOM);
 });
 
-test("catalog variants preserve the original, detail, enhancement, and approved reconstruction", () => {
+test("catalog variants preserve the original, detail, enhancement, and complete reconstruction", () => {
   const variants = buildImageVariants({
     embeddedImage: "data:image/jpeg;base64,detail",
     entry: {
       enhancedImageFile: "assets/enhanced.jpg",
       reconstructionFile: "assets/reconstruction.svg",
-      reconstructionStatus: "APROBADA"
+      reconstructionStatus: "COMPLETA VERIFICADA"
     },
     assets: {
       original: "/full-photo.jpg",
@@ -52,27 +52,79 @@ test("catalog variants preserve the original, detail, enhancement, and approved 
   assert.equal(variants[3].label, "Reconstrucción visual para práctica");
 });
 
-test("partial and non-reconstructable entries never expose a reconstruction", () => {
-  for (const reconstructionStatus of ["PARCIAL", "NO RECONSTRUIBLE"]) {
-    const variants = buildImageVariants({
-      embeddedImage: "data:image/jpeg;base64,detail",
-      entry: {
-        enhancedImageFile: null,
-        reconstructionFile: "assets/unapproved.svg",
-        reconstructionStatus
-      },
-      assets: {
-        original: "/full-photo.jpg",
-        enhanced: null,
-        reconstruction: "/unapproved.svg"
-      }
-    });
+test("partial reconstructions are available only with an explicit uncertainty label", () => {
+  const variants = buildImageVariants({
+    embeddedImage: "data:image/jpeg;base64,detail",
+    entry: {
+      enhancedImageFile: null,
+      reconstructionFile: "assets/partial.svg",
+      reconstructionStatus: "PARCIAL VERIFICADA"
+    },
+    assets: {
+      original: "/full-photo.jpg",
+      enhanced: null,
+      reconstruction: "/partial.svg"
+    }
+  });
 
-    assert.deepEqual(variants.map((variant) => variant.id), [
-      "original",
-      "detail"
-    ]);
-  }
+  assert.deepEqual(variants.map((variant) => variant.id), [
+    "original",
+    "detail",
+    "partial-reconstruction"
+  ]);
+  assert.equal(variants[2].kind, "partial-reconstruction");
+  assert.equal(
+    variants[2].label,
+    "Reconstrucción parcial — contiene elementos no confirmados"
+  );
+});
+
+test("non-reconstructable entries keep only the original and embedded crop", () => {
+  const variants = buildImageVariants({
+    embeddedImage: "data:image/jpeg;base64,detail",
+    entry: {
+      enhancedImageFile: null,
+      reconstructionFile: null,
+      reconstructionStatus: "NO RECONSTRUIBLE"
+    },
+    assets: {
+      original: "/full-photo.jpg",
+      enhanced: null,
+      reconstruction: null
+    }
+  });
+
+  assert.deepEqual(variants.map((variant) => variant.id), ["original", "detail"]);
+});
+
+test("remembered netstat variant appears only on the question that identifies it", () => {
+  const entry = {
+    id: "netstat",
+    reconstructionFile: "assets/netstat-partial.svg",
+    reconstructionStatus: "PARCIAL VERIFICADA"
+  };
+  const assets = {
+    original: "/netstat-original.jpg",
+    reconstruction: "/netstat-partial.svg",
+    practiceVariant: "/netstat-remembered.svg"
+  };
+  const q29 = buildImageVariants({
+    embeddedImage: "data:image/jpeg;base64,netstat",
+    entry,
+    assets,
+    questionText: "[FOTO | NETSTAT ORIGINAL]"
+  });
+  const q30 = buildImageVariants({
+    embeddedImage: "data:image/jpeg;base64,netstat",
+    entry,
+    assets,
+    questionText: "[RECUERDO | VARIANTE NETSTAT | CLAVE DE PRÁCTICA RECONSTRUIDA]"
+  });
+
+  assert.equal(q29.some((variant) => variant.id === "practice-variant"), false);
+  const practiceVariant = q30.find((variant) => variant.id === "practice-variant");
+  assert.equal(practiceVariant.src, "/netstat-remembered.svg");
+  assert.equal(practiceVariant.label, "VARIANTE RECONSTRUIDA PARA PRÁCTICA");
 });
 
 test("unknown images keep working as a single original image", () => {

@@ -1,28 +1,84 @@
-# Auditoría visual de imágenes — Redes, parcial 3 de 2026
+# Auditoría visual integral — Redes, parcial 3 de 2026
 
-La fotografía original es la fuente de verdad. Las reconstrucciones solo se ofrecen cuando cada texto y elemento relevante se pudo verificar. Las claves, preguntas, justificaciones e imágenes incrustadas del Word se compararon con la línea base previa a estos cambios.
+La fotografía original es la fuente primaria. Las reconstrucciones vectoriales separan lo que se distingue de lo que sigue incierto y no reemplazan las imágenes originales.
 
 ## Integridad del cuestionario
 
-- Word importado: `Redes_Parcial_3_2026_JoyaCards_Auditado.docx`.
-- 30 preguntas; 30 puntuables; 0 sin puntaje.
-- 9 apariciones de imágenes en 5 imágenes únicas.
-- 32 justificaciones y 0 advertencias de importación.
+- Documento importado: `Redes_Parcial_3_2026_JoyaCards_Auditado.docx`.
+- 30 preguntas puntuables, 32 justificaciones, 0 preguntas sin puntaje y 0 advertencias de importación.
+- 9 apariciones de imágenes y 5 imágenes únicas.
 - SHA-256 semántico antes y después: `9e9efc0a2741bdc58fcb04bb34a80f3aa9128706d1ccf72c5e9ac071968eeb3e`.
-- Se mantuvieron intactas las preguntas, opciones, claves, justificaciones y bytes de las imágenes incrustadas. La vista ampliada no cambia las respuestas ni el puntaje.
+- Los enunciados, opciones, claves, justificaciones, puntajes, tipos de pregunta y bytes de las imágenes incrustadas permanecen iguales.
+- Las cinco fotos completas originales se conservaron. Sus hashes y los de cada reconstrucción y comparación están en [AUDITORIA_IMAGENES.json](AUDITORIA_IMAGENES.json).
 
 ## Resultado por ejercicio
 
-| Ejercicio | Original y recorte | Mejora | Reconstrucción | Estado y revisión |
-| --- | --- | --- | --- | --- |
-| Firewall / Telnet | [Foto #11](assets/originales-completas/foto-11-firewall-completa-original.jpg), [recorte #22](assets/foto-11-firewall-telnet-origen-22.jfif) | [Versión mejorada](assets/mejoradas/foto-11-firewall-telnet-origen-22-mejorada.jpg) | [SVG aprobado](assets/reconstrucciones/reconstruccion-firewall-telnet.svg) | **APROBADA.** Se verificaron consigna, opciones, orden de las cinco reglas, protocolos, fuentes, destinos, checks y política. La consigna muestra `.155`, mientras que las reglas muestran `.33`; se preservó esa diferencia. Los íconos pequeños se redibujaron como detalle cosmético. [Comparación original/reconstrucción](assets/comparaciones/firewall-original-vs-reconstruccion.jpg); [original/mejora](assets/comparaciones/firewall-original-vs-mejorada.jpg). |
-| TFTP | [Foto #2](assets/originales-completas/foto-02-tftp-completa-original.jpg), [recorte #31](assets/foto-02-tftp-recorte-31.jfif) | [Versión mejorada](assets/mejoradas/foto-02-tftp-recorte-31-mejorada.jpg) | [SVG aprobado](assets/reconstrucciones/reconstruccion-tftp.svg) | **APROBADA.** Se cotejaron consigna y cinco opciones. La foto tiene seleccionada visualmente la opción D; esa selección se conservó como estado de pantalla y no se interpretó como clave. La clave existente B no cambió. [Comparación original/reconstrucción](assets/comparaciones/tftp-original-vs-reconstruccion.jpg); [original/mejora](assets/comparaciones/tftp-original-vs-mejorada.jpg). |
-| `nslookup` / Instagram | [Foto #3](assets/originales-completas/foto-14-nslookup-completa-original.jpg), [recorte #30](assets/foto-14-nslookup-instagram-original-abierta-30.jfif) | Sin mejora | [SVG aprobado](assets/reconstrucciones/reconstruccion-nslookup-instagram.svg) | **APROBADA.** Se cotejó `instagram.com`, la instrucción de no agregar texto ni espacios y el campo de respuesta vacío. La reconstrucción conserva el campo vacío; no se agregó una respuesta. [Comparación original/reconstrucción](assets/comparaciones/nslookup-original-vs-reconstruccion.jpg). |
-| `show ip route` | [Foto #12](assets/originales-completas/foto-12-show-ip-route-completa-original.jpg), [recorte #21](assets/foto-12-show-ip-route-recorte-21.jfif) | No aplicada: no aporta lectura fiable | No creada | **NO RECONSTRUIBLE.** La imagen se comparte entre cuatro preguntas. Varios rótulos de IP/interfaz, filas de tabla y conexiones no se pueden confirmar. Se preservan la foto y el recorte con zoom; no se inventaron rutas ni etiquetas. |
-| `netstat` | [Foto #8](assets/originales-completas/foto-08-netstat-completa-original.jpg), [recorte #25](assets/pendiente-foto-08-netstat-25.jfif) | No aplicada: no aporta lectura fiable | No creada | **NO RECONSTRUIBLE.** Es compartida por las preguntas puntuables 29 y 30. No se pueden confirmar todas las filas, direcciones, puertos y estados, especialmente la última. Se mantienen las claves existentes; no se completaron valores por intuición. |
+| Ejercicio | Estado | Material disponible |
+| --- | --- | --- |
+| Firewall / Telnet | **COMPLETA VERIFICADA** | Foto #11, recorte #22, versión mejorada, reconstrucción y comparación |
+| TFTP | **COMPLETA VERIFICADA** | Foto #2, recorte #31, versión mejorada, reconstrucción y comparación |
+| `nslookup` / Instagram | **COMPLETA VERIFICADA** | Foto #3, recorte #30, reconstrucción y comparación |
+| `show ip route` | **PARCIAL VERIFICADA** | Foto #12, recorte #21, reconstrucción de topología y tabla, comparación |
+| `netstat` | **PARCIAL VERIFICADA** | Foto #8, recorte #25, consola parcial y comparación; variante de práctica separada para la pregunta 30 |
 
-## Procesamiento y límites
+## 1. Firewall / Telnet — completa verificada
 
-Las cinco fotografías completas se extrajeron sin recomprimir del ZIP de fotos. Los SHA-256 de originales, recortes, mejoras y el baseline semántico están registrados en [`AUDITORIA_IMAGENES.json`](AUDITORIA_IMAGENES.json). Las mejoras de TFTP y Firewall usan ajustes moderados de contraste, color y enfoque; las comparaciones permiten cotejarlas con las capturas sin procesar. No se aplicó mejora automática a Netstat ni a routing porque no revelaba caracteres verificables. No se modificaron ni borraron las imágenes que ya estaban incrustadas en el Word.
+**Fuentes:** [foto completa #11](assets/originales-completas/foto-11-firewall-completa-original.jpg), [recorte #22](assets/foto-11-firewall-telnet-origen-22.jfif).
 
-La aplicación abre cada imagen en un visor con pantalla completa, rueda/controles de zoom, arrastre, gestos táctiles, cierre con Escape y selector de versiones. Solo las reconstrucciones **APROBADAS** aparecen como opción; las imágenes no reconstruibles conservan la foto original, el recorte del Word y el zoom.
+**Reconstrucción:** [SVG](assets/reconstrucciones/reconstruccion-firewall-telnet.svg). **Comparación:** [foto, recorte y reconstrucción](assets/comparaciones/firewall-original-vs-reconstruccion.jpg). **Mejora de imagen:** [versión mejorada](assets/mejoradas/foto-11-firewall-telnet-origen-22-mejorada.jpg) y [comparación con el original](assets/comparaciones/firewall-original-vs-mejorada.jpg).
+
+Se reabrieron y cotejaron las dos fuentes. La reconstrucción existente conserva las cinco reglas en su orden, protocolos, orígenes, destinos, acciones, checks y política general; también mantiene las zonas Green e Internet y sus colores. Se conserva la diferencia que aparece entre la IP `.155` de la consigna y las IP `.33` de ciertas reglas. Los pequeños iconos de edición se redibujaron como elementos cosméticos; no se interpretaron como reglas. La clave del cuestionario no se usó para reconstruir ni se cambió.
+
+**Fidelidad:** completa para la información relevante que se ve en la interfaz. La mejora de contraste/enfoque y el redibujo eliminan muaré y perspectiva, sin cambiar reglas.
+
+## 2. TFTP — completa verificada
+
+**Fuentes:** [foto completa #2](assets/originales-completas/foto-02-tftp-completa-original.jpg), [recorte #31](assets/foto-02-tftp-recorte-31.jfif).
+
+**Reconstrucción:** [SVG](assets/reconstrucciones/reconstruccion-tftp.svg). **Comparación:** [foto, recorte y reconstrucción](assets/comparaciones/tftp-original-vs-reconstruccion.jpg). **Mejora de imagen:** [versión mejorada](assets/mejoradas/foto-02-tftp-recorte-31-mejorada.jpg) y [comparación con el original](assets/comparaciones/tftp-original-vs-mejorada.jpg).
+
+Se verificaron literalmente la consigna, las cinco opciones, sus letras y su orden. La foto muestra seleccionada visualmente la opción D; la reconstrucción conserva esa selección y el enlace “Quitar mi elección”. La selección fotografiada no se interpretó como la respuesta correcta. La clave B existente permanece intacta.
+
+**Fidelidad:** completa respecto del contenido fotografiado. Se normalizaron tipografía y espaciado para hacer legible la misma interfaz.
+
+## 3. `nslookup` / Instagram — completa verificada
+
+**Fuentes:** [foto completa #3](assets/originales-completas/foto-14-nslookup-completa-original.jpg), [recorte #30](assets/foto-14-nslookup-instagram-original-abierta-30.jfif).
+
+**Reconstrucción:** [SVG](assets/reconstrucciones/reconstruccion-nslookup-instagram.svg). **Comparación:** [foto, recorte y reconstrucción](assets/comparaciones/nslookup-original-vs-reconstruccion.jpg).
+
+Se cotejaron el dominio `instagram.com`, la instrucción de escribir el comando completo y la indicación de no agregar texto ni espacios de más. El campo “Respuesta” queda vacío, como en la foto; no se incorporó la respuesta ni se convirtió la captura en opción múltiple.
+
+**Fidelidad:** completa para la consigna y el campo visible. Se eliminaron muaré, inclinación y entorno físico.
+
+## 4. `show ip route` — parcial verificada
+
+**Fuentes:** [foto completa #12](assets/originales-completas/foto-12-show-ip-route-completa-original.jpg), [recorte #21](assets/foto-12-show-ip-route-recorte-21.jfif). Las preguntas 14–17 comparten la misma foto y reciben la misma reconstrucción.
+
+Busqué `redes_pregunta_5_reconstruccion_fiel.png` en el repositorio y los adjuntos disponibles, pero no encontré ese archivo. Esta versión se reconstruyó desde las dos fuentes citadas.
+
+**Reconstrucción:** [SVG parcial](assets/reconstrucciones/reconstruccion-show-ip-route-parcial.svg). **Comparación:** [foto completa, recorte y reconstrucción](assets/comparaciones/show-ip-route-original-vs-reconstruccion-parcial.jpg).
+
+Se reconstruyeron la geometría triangular de los tres routers y las cuatro LAN en sus posiciones relativas. El dibujo conserva tres equipos finales en la LAN izquierda, dos en la LAN superior derecha, uno y un switch en la LAN inferior izquierda, y un punto de acceso con dos portátiles en la LAN inferior derecha. Se incluyeron las siete subredes visibles: `192.168.10.0/24`, `.20.0/24`, `.30.0/24`, `.40.0/24`, `.50.0/24`, `.60.0/24` y `.70.0/24`. Los enlaces entre routers mantienen el trazo rojo observado; no se dibujaron puntas porque el sentido de las marcas no puede confirmarse. Las LAN de la parte inferior mantienen el trazo verde visible.
+
+La consola se transcribió en el orden de la foto: `Gateway of last resort is not set`; rutas RIP de `192.168.10.0/24`, `192.168.30.0/24` y `192.168.50.0/24`; redes directamente conectadas `.20.0/24`, `.40.0/24`, `.60.0/24`, `.70.0/24`; y las rutas locales `/32`. Se conservaron métricas `[120/1]`, próximos saltos, tiempos e interfaces que se leen en la tabla. La identificación del router consultado como Router2 proviene de la pregunta asociada y se marca como referencia cruzada.
+
+**No verificable:** nombres de los otros routers, nombres/modelos pequeños de varios dispositivos, interfaces rotuladas junto a los cables y sentido de las marcas rojas. Esos datos no se completaron. La tabla es legible; la incertidumbre queda principalmente en rótulos y flechas del diagrama.
+
+## 5. `netstat` — parcial verificada
+
+**Fuentes:** [foto completa #8](assets/originales-completas/foto-08-netstat-completa-original.jpg), [recorte #25](assets/pendiente-foto-08-netstat-25.jfif). Las preguntas 29 y 30 conservan el mismo original y la misma reconstrucción parcial.
+
+**Reconstrucción de la foto:** [SVG parcial](assets/reconstrucciones/reconstruccion-netstat-parcial.svg). **Comparación:** [foto completa, recorte y reconstrucción parcial](assets/comparaciones/netstat-original-vs-reconstruccion-parcial.jpg).
+
+La captura permite verificar una consola oscura, los encabezados de seis columnas (`Proto`, `Recv-Q`, `Send-Q`, `Local Address`, `Foreign Address`, `State`) y tres filas, en ese orden. La línea superior del encabezado y los valores de las filas no tienen lectura confiable. Por eso cada campo de las tres filas aparece como `[…]`; no se asignaron protocolos, colas, direcciones, puertos ni estados.
+
+**Variante recordada, solo para práctica de la pregunta 30:** [SVG](assets/reconstrucciones/netstat-variante-recordada-practica.svg). La etiqueta exacta es **VARIANTE RECONSTRUIDA PARA PRÁCTICA**. **Comparación:** [foto, recorte y variante recordada](assets/comparaciones/netstat-original-vs-variante-recordada.jpg). Representa únicamente TCP 22 LISTEN, TCP 443 LISTEN y UDP 8280 con estado vacío. No agrega direcciones ni colas y no se presenta como transcripción de la foto. La pregunta 29 no ofrece esa variante. Las respuestas correctas de ambas preguntas no se tocaron.
+
+**Fidelidad:** parcial para la captura real; los encabezados y cantidad de filas se conservaron, pero los valores ilegibles permanecen desconocidos.
+
+## Validación y límites
+
+Las cinco fotos y sus recortes se compararon visualmente con sus reconstrucciones. Se conservaron las tres reconstrucciones completas existentes: no se identificaron cambios de contenido que justificaran redibujarlas. Las dos imágenes antes consideradas no reconstruibles ahora tienen reconstrucciones parciales con incertidumbres visibles.
+
+Las versiones mejoradas siguen disponibles para Firewall y TFTP. Los originales y recortes de todas las imágenes continúan en el selector. Las reconstrucciones no alteran la importación, respuestas ni puntajes.

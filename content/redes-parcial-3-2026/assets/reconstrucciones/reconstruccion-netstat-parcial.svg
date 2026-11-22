@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="650" viewBox="0 0 1400 650" role="img" aria-labelledby="title desc">
+  <title id="title">Reconstrucción parcial verificada de la consola netstat</title>
+  <desc id="desc">Se conserva la estructura de consola y las tres filas visibles. Los valores de cada fila se muestran como no verificables y no se completan.</desc>
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #eaf0f8; }
+      .mono { font-family: Consolas, "Courier New", monospace; }
+      .header { fill: #b9c8dc; font-size: 19px; }
+      .value { fill: #ffd89b; font-size: 20px; font-weight: 700; }
+      .tag { fill: #7c2d12; font-size: 18px; font-weight: 700; }
+    </style>
+  </defs>
+  <rect width="1400" height="650" rx="22" fill="#101827"/>
+  <text id="title" x="55" y="64" font-size="34" font-weight="700">NETSTAT · RECONSTRUCCIÓN PARCIAL</text>
+  <rect x="1080" y="28" width="260" height="44" rx="22" fill="#ffedd5"/>
+  <text x="1210" y="57" text-anchor="middle" class="tag">PARCIAL VERIFICADA</text>
+  <text x="55" y="105" fill="#b9c8dc" font-size="18">Captura original #8 · recorte #25 · 3 filas de datos visibles</text>
+
+  <rect x="45" y="135" width="1310" height="405" rx="12" fill="#050a12" stroke="#334155" stroke-width="2"/>
+  <text x="75" y="185" class="mono header">[…] encabezado superior no verificable</text>
+  <g class="mono header">
+    <text x="75" y="226">Proto</text>
+    <text x="215" y="226">Recv-Q</text>
+    <text x="360" y="226">Send-Q</text>
+    <text x="525" y="226">Local Address</text>
+    <text x="825" y="226">Foreign Address</text>
+    <text x="1160" y="226">State</text>
+  </g>
+  <path d="M70 244H1330" stroke="#334155" stroke-width="2"/>
+
+  <g class="mono value">
+    <text x="75" y="296">[…]</text><text x="215" y="296">[…]</text><text x="360" y="296">[…]</text><text x="525" y="296">[…]</text><text x="825" y="296">[…]</text><text x="1160" y="296">[…]</text>
+    <text x="75" y="355">[…]</text><text x="215" y="355">[…]</text><text x="360" y="355">[…]</text><text x="525" y="355">[…]</text><text x="825" y="355">[…]</text><text x="1160" y="355">[…]</text>
+    <text x="75" y="414">[…]</text><text x="215" y="414">[…]</text><text x="360" y="414">[…]</text><text x="525" y="414">[…]</text><text x="825" y="414">[…]</text><text x="1160" y="414">[…]</text>
+  </g>
+  <rect x="72" y="458" width="1255" height="56" rx="10" fill="#1e293b" stroke="#475569"/>
+  <text x="95" y="493" fill="#fde68a" font-size="18" font-weight="700">[…] = campo cuya lectura no se puede confirmar en la fotografía.</text>
+  <text x="55" y="588" fill="#b9c8dc" font-size="18">No se asignan protocolos, direcciones, puertos ni estados a estas filas.</text>
+</svg>
