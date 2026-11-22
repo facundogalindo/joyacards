@@ -88,7 +88,7 @@ Las preguntas 5–8 de la referencia son las cuatro partes de un solo ejercicio 
 
 El importador actual exige al menos una respuesta correcta para una pregunta de opción única. El parser del formato de varios desplegables también exige una opción correcta por desplegable; el modo de cuestionario luego califica la selección como correcta o incorrecta. Por eso no puede representar una consigna pendiente sin asignarle una clave o cambiar la arquitectura.
 
-La solución reutilizable sin tocar el comportamiento general es `Pendientes_Redes_Parcial_3_2026_Practica_Sin_Puntuar.docx`, generado por el mismo script fuente. Incluye la pregunta original de netstat, sus siete opciones, la captura conservada y la variante recordada. La captura se repite sin editar y se indica expresamente que no representa la variante. El documento no es importable ni puntuable; funciona como hoja de práctica hasta que se recupere una consola legible.
+La solución reutilizable sin tocar el comportamiento general es `Pendientes_Redes_Parcial_3_2026_Practica_Sin_Puntuar.docx`, generado por el mismo script fuente. Incluye la pregunta original de netstat, sus siete opciones y la misma captura original en dos ejercicios. La variante recordada muestra inmediatamente debajo de la captura una aclaración sobre el campo ESTADO vacío; no modifica la imagen ni atribuye el cambio a una fila concreta. El documento no es importable ni puntuable y no contiene claves.
 
 ## Cambios respecto del commit anterior
 
@@ -102,6 +102,13 @@ La solución reutilizable sin tocar el comportamiento general es `Pendientes_Red
 - Se renombraron los assets route y TFTP al integrarlos como preguntas verificadas/reconstruidas, sin modificar sus bytes.
 - El generador calcula el total desde las tarjetas fuente; ya no fija 23.
 - No se modificó la arquitectura de la aplicación ni el importador general.
+
+## Correcciones finales — 22/11/2026
+
+- IMAP conserva la etiqueta `[RECUERDO | RECREACIÓN; OPCIONES RECONSTRUIDAS]`, la pregunta y TCP 143.
+- H.323 usa la etiqueta `[TESTIMONIO | RECREACIÓN; CUARTA OPCIÓN DESCONOCIDA]`; sus alternativas visibles son `A) Terminales.`, `B) Gatekeepers.` y `C) Puertas de enlace.`. `A) Terminales.` sigue siendo la clave y la cuarta alternativa desconocida no se inventa.
+- El cuadernillo presenta `Ejercicio 1 — Captura original del parcial` y `Ejercicio 2 — Variante recordada`. Ambos conservan el mismo enunciado, opciones y archivo de imagen. La segunda versión incorpora, justo debajo de la imagen y antes de las opciones, la aclaración del recuerdo sobre el campo ESTADO vacío. Sigue pendiente y sin respuesta asignada.
+- No se modificaron otras preguntas ni respuestas del cuestionario.
 
 ## Formato e importación
 
@@ -117,5 +124,7 @@ Resultados de la nueva iteración:
 - El cuadernillo auxiliar mantuvo sus **2 versiones pendientes** y sus 2 apariciones de la captura original. El conversor importó 0 preguntas desde ese documento, como se espera: no contiene claves ni formato puntuable.
 - Tests: backend **22/22** y frontend **8/8** aprobados. Lint y build del frontend aprobados.
 - El build muestra el aviso habitual de Vite porque el bundle JavaScript principal supera 500 kB (581,38 kB); no impidió la compilación.
-- Se generaron e inspeccionaron visualmente las 13 páginas del cuestionario y las 2 del cuadernillo pendiente. La conversión a PDF se hizo con LibreOffice y la rasterización de páginas con PyMuPDF, porque el entorno no tiene Poppler.
-- `git diff --check` y la validación de sintaxis de los tres JSON fuente pasan.
+- Se renderizaron las 13 páginas del cuestionario y las 2 del cuadernillo pendiente. La revisión visual confirmó H.323 y ambos ejercicios netstat; la comparación con el render anterior muestra solo el cambio previsto en la página 13 del cuestionario y ningún cambio visual en el cuadernillo. La conversión a PDF se hizo con LibreOffice y la rasterización con PyMuPDF, porque el entorno no tiene Poppler.
+- `git diff --check` y la validación de sintaxis de los cuatro JSON fuente pasan.
+
+La regeneración final mantuvo la importación y las claves auditadas. La comparación entre el DOCX previo y el actual confirma que en H.323 solo cambiaron la etiqueta y la capitalización visible A/B/C; la respuesta y la justificación no variaron. El resto de las preguntas, respuestas y justificaciones quedó igual. El cuadernillo auxiliar conserva ambas versiones de netstat sin asignar respuestas.

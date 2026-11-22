@@ -92,6 +92,21 @@ async function imageParagraph(imageName) {
   });
 }
 
+function variantAnnotationParagraph(text) {
+  const label = "VARIANTE DEL PARCIAL (RECUERDO):";
+  const labelText = text.startsWith(label) ? label + " " : "";
+  const bodyText = labelText ? text.slice(labelText.length) : text;
+  return new Paragraph({
+    keepLines: true,
+    indent: { left: 120, right: 120 },
+    spacing: { after: 100, line: 260 },
+    children: [
+      ...(labelText ? [new TextRun({ text: labelText, bold: true, color: "46505C", size: 18, font: "Arial" })] : []),
+      new TextRun({ text: bodyText, color: "46505C", size: 18, font: "Arial" })
+    ]
+  });
+}
+
 function justification(card) {
   return [
     "Procedencia: " + card.source,
@@ -149,7 +164,10 @@ async function main() {
     }
 
     card.options.forEach((option, optionIndex) => {
-      children.push(paragraph(letter[optionIndex] + ") " + option.text + (option.correct ? " *" : ""), {
+      const optionLetter = card.optionLetterCase === "upper"
+        ? letter[optionIndex].toUpperCase()
+        : letter[optionIndex];
+      children.push(paragraph(optionLetter + ") " + option.text + (option.correct ? " *" : ""), {
         after: 55,
         keepNext: optionIndex < card.options.length - 1 || option.correct
       }));
@@ -199,7 +217,7 @@ async function main() {
       keepNext: true,
       pageBreakBefore: index > 0
     }));
-    pendingChildren.push(paragraph("[PENDIENTE | NO PUNTUAR] " + card.source, {
+    pendingChildren.push(paragraph((card.label || "[PENDIENTE | NO PUNTUAR]") + " " + card.source, {
       size: 17,
       color: "8A4B08",
       after: 80,
@@ -208,7 +226,12 @@ async function main() {
     pendingChildren.push(paragraph(card.prompt, { bold: true, size: 22, after: 90, keepNext: true }));
     pendingChildren.push(paragraph("[[CAPTURA ORIGINAL]]", { color: "606B79", size: 16, after: 20, keepNext: true }));
     pendingChildren.push(await imageParagraph(card.image));
-    pendingChildren.push(paragraph(card.imageCaption, { size: 17, after: 90, keepNext: true }));
+    if (card.afterImageText) {
+      pendingChildren.push(variantAnnotationParagraph(card.afterImageText));
+    }
+    if (card.imageCaption) {
+      pendingChildren.push(paragraph(card.imageCaption, { size: 17, after: 90, keepNext: true }));
+    }
     pendingChildren.push(paragraph("Opciones", { bold: true, size: 20, after: 55, keepNext: true }));
     card.options.forEach((option, optionIndex) => {
       pendingChildren.push(paragraph(String.fromCharCode(65 + optionIndex) + ") " + option, {

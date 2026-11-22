@@ -138,7 +138,8 @@
   {
     "source": "[TESTIMONIO] Se recuerdan las opciones Terminales, Gatekeepers, Puertas de enlace y una cuarta opción desconocida.",
     "marker": "@@",
-    "tag": "[TESTIMONIO | RECREACIÓN; CUARTA OPCIÓN DESCONOCIDA OMITIDA]",
+    "optionLetterCase": "upper",
+    "tag": "[TESTIMONIO | RECREACIÓN; CUARTA OPCIÓN DESCONOCIDA]",
     "prompt": "¿Cómo se llaman los teléfonos en el protocolo H.323?",
     "options": [
       {"text":"Terminales.","correct":true},

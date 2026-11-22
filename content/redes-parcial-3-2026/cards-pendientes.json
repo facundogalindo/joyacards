@@ -1,7 +1,8 @@
 [
   {
     "id": "NETSTAT-FOTO-ORIGINAL",
-    "title": "Netstat: consigna original de la foto",
+    "title": "Ejercicio 1 — Captura original del parcial",
+    "label": "[FOTO | CONSIGNA ORIGINAL | PENDIENTE]",
     "source": "[FOTO] Foto completa #8; recorte ampliado #25.",
     "prompt": "La ejecución de un comando nos permite ver los puertos de los servicios que funcionan en el equipo, ¿Qué servicios puede asegurar que están corriendo en el servidor?",
     "image": "pendiente-foto-08-netstat-25.jfif",
@@ -23,11 +24,13 @@
   },
   {
     "id": "NETSTAT-VARIANTE-RECORDADA",
-    "title": "Netstat: variante recordada con una fila sin LISTEN",
+    "title": "Ejercicio 2 — Variante recordada",
+    "label": "[RECUERDO | VARIANTE DEL PARCIAL | PENDIENTE]",
     "source": "[RECUERDO] Variante comunicada por el estudiante; se vincula a la consigna de la foto #8 / recorte #25.",
     "prompt": "La ejecución de un comando nos permite ver los puertos de los servicios que funcionan en el equipo, ¿Qué servicios puede asegurar que están corriendo en el servidor?",
     "image": "pendiente-foto-08-netstat-25.jfif",
-    "imageCaption": "La captura original se repite como referencia sin editar. No representa la variante recordada: se desconoce qué fila era, su protocolo y el estado exacto.",
+    "imageCaption": "",
+    "afterImageText": "VARIANTE DEL PARCIAL (RECUERDO): Imaginá que, en una de las filas de la consola, el campo ESTADO aparece vacío en lugar de mostrar LISTEN. El resto de la captura permanece igual. Teniendo en cuenta ese cambio, respondé la misma consigna original.",
     "options": [
       "SSH",
       "FTP",
