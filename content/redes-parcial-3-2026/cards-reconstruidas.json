@@ -2,7 +2,7 @@
   {
     "source": "[RECUERDO] Reconstrucción del recuerdo del usuario; sin foto.",
     "marker": "@@",
-    "tag": "[RECUERDO | RECREACIÓN; OPCIONES RECONSTRUIDAS]",
+    "tag": "[RECUERDO | RECREACIÓN; MODO ACTIVO ELEGIDO PARA PRACTICAR; OPCIONES RECONSTRUIDAS]",
     "prompt": "En una transferencia FTP tradicional en modo activo, ¿qué puertos utiliza el servidor para la conexión de control y para la conexión de datos?",
     "options": [
       {"text":"Control 20 y datos 21.","correct":false},
@@ -53,7 +53,7 @@
   {
     "source": "[RECUERDO] Reconstrucción del recuerdo del usuario; sin foto.",
     "marker": "@@",
-    "tag": "[RECUERDO | RECREACIÓN; MODO ACTIVO ELEGIDO PARA PRACTICAR; OPCIONES RECONSTRUIDAS]",
+    "tag": "[RECUERDO | RECREACIÓN; OPCIONES RECONSTRUIDAS]",
     "prompt": "¿Qué puerto utiliza IMAP?",
     "options": [
       {"text":"110.","correct":false},
@@ -125,15 +125,15 @@
     "prompt": "¿Qué protocolo de cifrado usa IPsec para asegurar confidencialidad?",
     "options": [
       {"text":"RSA.","correct":false},
-      {"text":"PKA (grafía recordada; significado sin confirmar).","correct":false},
+      {"text":"PKA.","correct":false},
       {"text":"MD5.","correct":false},
       {"text":"SHA-2.","correct":false},
-      {"text":"AES (opción reconstruida; no confirmada como literal del examen).","correct":true}
+      {"text":"AES.","correct":true}
     ],
-    "rationale": "Se conserva la palabra “protocolo” tal como aparece en el testimonio. Técnicamente, las opciones son algoritmos o funciones: ESP puede usar cifrado simétrico como AES para ofrecer confidencialidad; MD5 y SHA-2 son funciones hash. RSA no es el cifrado simétrico de los datos de ESP. PKA se conserva con la grafía recordada, sin asignarle un significado.",
+    "rationale": "Se conserva la palabra “protocolo” tal como aparece en el testimonio. Técnicamente, las opciones son algoritmos o funciones: ESP puede usar cifrado simétrico como AES para ofrecer confidencialidad; MD5 y SHA-2 son funciones hash. RSA no es el cifrado simétrico de los datos de ESP. PKA se conserva con la grafía recordada, pero su significado no se confirmó. AES se agregó como opción reconstruida para practicar; no se confirmó que fuera una alternativa literal del examen.",
     "references": "Resumen Final RIN, PDF pp. 125–126 (AES y funciones hash); Tanenbaum, Feamster y Wetherall (2023), Redes de computadoras, PDF pp. 843–846; Filminas Unidad 6, Seguridad, PDF pp. 37 y 39. Testimonio: 21/11/2026, 10:48.",
     "confidence": "Alta para el uso de AES en confidencialidad IPsec; baja para la literalidad del enunciado, la opción AES y la quinta opción del examen.",
-    "reconstruction": "Sí. AES se agregó como opción correcta; RSA, PKA, MD5 y SHA-2 son las cuatro opciones recordadas."
+    "reconstruction": "Sí. AES se agregó como opción correcta reconstruida y no se confirma como alternativa literal. RSA, PKA, MD5 y SHA-2 son las cuatro opciones recordadas; PKA se conserva con la grafía del testimonio y significado desconocido."
   },
   {
     "source": "[TESTIMONIO] Se recuerdan las opciones Terminales, Gatekeepers, Puertas de enlace y una cuarta opción desconocida.",
@@ -143,7 +143,7 @@
     "options": [
       {"text":"Terminales.","correct":true},
       {"text":"Gatekeepers.","correct":false},
-      {"text":"Puertas de enlace (gateways).","correct":false}
+      {"text":"Puertas de enlace.","correct":false}
     ],
     "rationale": "En H.323, los teléfonos o dispositivos terminales se denominan terminales. Gatekeepers gestionan funciones de control y las puertas de enlace conectan redes IP y telefónicas. Se conserva el enunciado y las tres opciones recordadas; la cuarta opción desconocida se omite.",
     "references": "Tanenbaum, Feamster y Wetherall (2023), Redes de computadoras, PDF p. 721; Filminas Unidad 5, Voz IP, PDF pp. 5–6. Testimonio: 21/11/2026, 10:48.",
