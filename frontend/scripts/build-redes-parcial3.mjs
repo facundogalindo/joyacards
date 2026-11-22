@@ -15,15 +15,15 @@ const repositoryRoot = path.resolve(scriptDirectory, "../..");
 const contentDirectory = path.join(repositoryRoot, "content", "redes-parcial-3-2026");
 const assetDirectory = path.join(contentDirectory, "assets");
 const outputFile = path.join(contentDirectory, "Redes_Parcial_3_2026_JoyaCards_Auditado.docx");
-const pendingOutputFile = path.join(contentDirectory, "Pendientes_Redes_Parcial_3_2026_Practica_Sin_Puntuar.docx");
+const practiceOutputFile = path.join(contentDirectory, "Practica_NETSTAT_Redes_Parcial_3_2026_Clave_Reconstruida.docx");
 const letter = "abcdefghijklmnopqrstuvwxyz";
 const netstatPrompt = "La ejecución de un comando nos permite ver los puertos de los servicios que funcionan en el equipo, ¿Qué servicios puede asegurar que están corriendo en el servidor?";
 const netstatOptions = ["SSH", "FTP", "DNS", "HTTPS", "DHCP", "HTTP", "Telnet"];
-const netstatLabels = [
-  "[FOTO | NETSTAT ORIGINAL | SIN PUNTUAR]",
-  "[RECUERDO | VARIANTE NETSTAT | SIN PUNTUAR]"
+const netstatPracticeLabels = [
+  "[FOTO | NETSTAT ORIGINAL | CLAVE DE PRÁCTICA RECONSTRUIDA]",
+  "[RECUERDO | VARIANTE NETSTAT | CLAVE DE PRÁCTICA RECONSTRUIDA]"
 ];
-const variantAnnotation = "VARIANTE DEL PARCIAL (RECUERDO): Imaginá que, en una de las filas de la consola, el campo ESTADO aparece vacío en lugar de mostrar LISTEN. El resto de la captura permanece igual. Teniendo en cuenta ese cambio, respondé la misma consigna original.";
+const variantAnnotation = "VARIANTE DEL PARCIAL (RECUERDO): Imaginá que la última entrada, correspondiente a UDP en el puerto 8280, presenta el campo ESTADO vacío. Las entradas TCP de los puertos 22 y 443 permanecen en LISTEN. Teniendo en cuenta ese cambio, respondé la misma consigna original.";
 
 async function loadCards(fileName) {
   const fileText = await readFile(path.join(contentDirectory, fileName), "utf8");
@@ -130,8 +130,28 @@ async function main() {
     loadCards("cards-fotos-2.json"),
     loadCards("cards-reconstruidas.json")
   ]);
-  const cards = cardGroups.flat();
-  const pendingCards = await loadCards("cards-pendientes.json");
+  const netstatSourceCards = await loadCards("cards-pendientes.json");
+  const netstatCards = netstatSourceCards.map((card) => {
+    const correctOptions = new Set(card.practiceCorrectOptions);
+    return {
+      marker: "@@@",
+      tag: card.label,
+      prompt: card.prompt,
+      image: card.image,
+      afterImageText: card.afterImageText,
+      afterImageTextMode: card.afterImageTextMode,
+      source: card.source,
+      rationale: card.rationale,
+      references: card.references,
+      confidence: card.confidence,
+      reconstruction: card.reconstruction,
+      options: card.options.map((text) => ({
+        text,
+        correct: correctOptions.has(text)
+      }))
+    };
+  });
+  const cards = [...cardGroups.flat(), ...netstatCards];
 
   if (cards.length === 0) {
     throw new Error("No hay tarjetas puntuables para generar el cuestionario");
@@ -145,37 +165,45 @@ async function main() {
         ? card.options.filter((option) => option.correct).length
         : 0
     }))
-    .filter(({ card, correctCount }) => !card.prompt || !Array.isArray(card.options) || correctCount !== 1);
+    .filter(({ card, correctCount }) =>
+      !card.prompt ||
+      !Array.isArray(card.options) ||
+      correctCount !== (card.marker === "@@@" ? 2 : 1)
+    );
 
   if (invalidCards.length > 0) {
     throw new Error("Tarjetas inválidas: " + invalidCards.map(({ index }) => index).join(", "));
   }
 
-  if (cards.length !== 28) {
-    throw new Error(`Se esperaban 28 tarjetas puntuables y se encontraron ${cards.length}`);
+  if (cards.length !== 30) {
+    throw new Error(`Se esperaban 30 tarjetas puntuables y se encontraron ${cards.length}`);
   }
 
-  if (pendingCards.length !== 2) {
-    throw new Error(`Se esperaban 2 ejercicios netstat sin puntuar y se encontraron ${pendingCards.length}`);
+  if (netstatSourceCards.length !== 2) {
+    throw new Error(`Se esperaban 2 ejercicios netstat y se encontraron ${netstatSourceCards.length}`);
   }
 
-  const netstatImage = pendingCards[0]?.image;
-  const invalidPendingCards = pendingCards.filter((card, index) =>
-    card.label !== netstatLabels[index] ||
+  const netstatImage = netstatSourceCards[0]?.image;
+  const invalidNetstatCards = netstatSourceCards.filter((card, index) =>
+    card.label !== netstatPracticeLabels[index] ||
     card.prompt !== netstatPrompt ||
     card.image !== netstatImage ||
     !card.image ||
     !Array.isArray(card.options) ||
     card.options.length !== netstatOptions.length ||
     card.options.some((option, optionIndex) => option !== netstatOptions[optionIndex]) ||
-    "answers" in card ||
+    JSON.stringify(card.practiceCorrectOptions) !== JSON.stringify(["SSH", "HTTPS"]) ||
     card.options.some((option) => typeof option !== "string") ||
+    card.label.includes("SIN PUNTUAR") ||
+    !card.rationale ||
+    !card.confidence ||
+    !card.reconstruction ||
     (index === 0 && Boolean(card.afterImageText)) ||
-    (index === 1 && card.afterImageText !== variantAnnotation)
+    (index === 1 && (card.afterImageText !== variantAnnotation || card.afterImageTextMode !== "annotation"))
   );
 
-  if (invalidPendingCards.length > 0) {
-    throw new Error("Las tarjetas netstat sin puntuar no coinciden con la especificación revisada");
+  if (invalidNetstatCards.length > 0) {
+    throw new Error("Las tarjetas netstat puntuables no coinciden con la especificación revisada");
   }
 
   const children = [];
@@ -193,7 +221,12 @@ async function main() {
       children.push(paragraph("[[IMAGEN]]", { color: "606B79", size: 16, after: 20, keepNext: true }));
       children.push(await imageParagraph(card.image));
       if (card.afterImageText) {
-        children.push(paragraph(card.afterImageText, { after: 70, keepNext: true }));
+        if (card.afterImageTextMode === "annotation") {
+          children.push(paragraph("[[TEXTO_POST_IMAGEN]]", { color: "606B79", size: 16, after: 20, keepNext: true }));
+          children.push(variantAnnotationParagraph(card.afterImageText));
+        } else {
+          children.push(paragraph(card.afterImageText, { after: 70, keepNext: true }));
+        }
       }
     }
 
@@ -219,47 +252,6 @@ async function main() {
     }));
   }
 
-  for (let index = 0; index < pendingCards.length; index += 1) {
-    const card = pendingCards[index];
-    const questionNumber = cards.length + index + 1;
-    children.push(paragraph(`@@@ ${questionNumber}. ${card.label} ${card.prompt}`, {
-      bold: true,
-      size: 22,
-      after: 90,
-      keepNext: true
-    }));
-    children.push(paragraph("[[SIN_PUNTUAR]]", {
-      color: "606B79",
-      size: 16,
-      after: 20,
-      keepNext: true
-    }));
-    children.push(paragraph("[[IMAGEN]]", { color: "606B79", size: 16, after: 20, keepNext: true }));
-    children.push(await imageParagraph(card.image));
-
-    if (card.afterImageText) {
-      children.push(paragraph("[[TEXTO_POST_IMAGEN]]", {
-        color: "606B79",
-        size: 16,
-        after: 20,
-        keepNext: true
-      }));
-      children.push(variantAnnotationParagraph(card.afterImageText));
-    }
-
-    card.options.forEach((option, optionIndex) => {
-      children.push(paragraph(`${letter[optionIndex]}) ${option}`, {
-        after: 55,
-        keepNext: optionIndex < card.options.length - 1
-      }));
-    });
-
-    children.push(new Paragraph({
-      spacing: { after: 130 },
-      children: [new TextRun("")]
-    }));
-  }
-
   const document = new Document({
     creator: "JoyaCards content audit",
     title: "Redes - tercer parcial 2026 - cuestionario auditado",
@@ -274,72 +266,77 @@ async function main() {
 
   await writeFile(outputFile, await Packer.toBuffer(document));
 
-  const pendingChildren = [
-    paragraph("Redes tercer parcial 2026 preguntas pendientes", { bold: true, size: 32, after: 180 }),
-    paragraph("Material de práctica sin puntuar. Se conservan el enunciado, las opciones conocidas y la captura original; no se asigna una respuesta correcta cuando la evidencia no permite comprobarla.", { size: 20, after: 220 })
+  const practiceChildren = [
+    paragraph("Práctica de netstat con clave reconstruida", { bold: true, size: 32, after: 180 }),
+    paragraph("Las respuestas marcadas son una clave de práctica basada en la interpretación acordada. La fotografía original no permite verificar todos sus caracteres; la variante recordada explicita el supuesto de la fila UDP/8280.", { size: 20, after: 220 })
   ];
 
-  for (let index = 0; index < pendingCards.length; index += 1) {
-    const card = pendingCards[index];
-    if (!card.prompt || !Array.isArray(card.options) || card.options.length === 0) {
-      throw new Error("Ejercicio pendiente inválido: " + (card.id || index + 1));
+  for (let index = 0; index < netstatSourceCards.length; index += 1) {
+    const card = netstatSourceCards[index];
+    if (!card.prompt || !Array.isArray(card.options) || card.options.length === 0 || card.practiceCorrectOptions.length !== 2) {
+      throw new Error("Ejercicio netstat de práctica inválido: " + (card.id || index + 1));
     }
 
-    pendingChildren.push(paragraph(card.title, {
+    practiceChildren.push(paragraph(card.title, {
       bold: true,
       size: 24,
       after: 100,
       keepNext: true,
       pageBreakBefore: index > 0
     }));
-    pendingChildren.push(paragraph((card.label || "[PENDIENTE | NO PUNTUAR]") + " " + card.source, {
+    practiceChildren.push(paragraph(card.label + " " + card.source, {
       size: 17,
       color: "8A4B08",
       after: 80,
       keepNext: true
     }));
-    pendingChildren.push(paragraph(card.prompt, { bold: true, size: 22, after: 90, keepNext: true }));
-    pendingChildren.push(paragraph("[[CAPTURA ORIGINAL]]", { color: "606B79", size: 16, after: 20, keepNext: true }));
-    pendingChildren.push(await imageParagraph(card.image));
+    practiceChildren.push(paragraph(card.prompt, { bold: true, size: 22, after: 90, keepNext: true }));
+    practiceChildren.push(paragraph("[[CAPTURA ORIGINAL]]", { color: "606B79", size: 16, after: 20, keepNext: true }));
+    practiceChildren.push(await imageParagraph(card.image));
     if (card.afterImageText) {
-      pendingChildren.push(variantAnnotationParagraph(card.afterImageText));
+      practiceChildren.push(variantAnnotationParagraph(card.afterImageText));
     }
     if (card.imageCaption) {
-      pendingChildren.push(paragraph(card.imageCaption, { size: 17, after: 90, keepNext: true }));
+      practiceChildren.push(paragraph(card.imageCaption, { size: 17, after: 90, keepNext: true }));
     }
-    pendingChildren.push(paragraph("Opciones", { bold: true, size: 20, after: 55, keepNext: true }));
+    practiceChildren.push(paragraph("Opciones", { bold: true, size: 20, after: 55, keepNext: true }));
     card.options.forEach((option, optionIndex) => {
-      pendingChildren.push(paragraph(String.fromCharCode(65 + optionIndex) + ") " + option, {
+      const isCorrect = card.practiceCorrectOptions.includes(option);
+      practiceChildren.push(paragraph(String.fromCharCode(65 + optionIndex) + ") " + option + (isCorrect ? " *" : ""), {
         after: 45,
-        keepNext: optionIndex < card.options.length - 1
+        keepNext: optionIndex < card.options.length - 1 || isCorrect
       }));
+      if (isCorrect) {
+        practiceChildren.push(paragraph("Justificación: " + card.rationale, { size: 18, after: 55 }));
+      }
     });
-    pendingChildren.push(paragraph("Respuesta para revisar: ______________________________________________", { after: 80 }));
-    pendingChildren.push(paragraph("Observaciones", { bold: true, size: 19, after: 50, keepNext: true }));
-    card.notes.forEach((note) => pendingChildren.push(paragraph(note, { size: 18, after: 55 })));
-    pendingChildren.push(paragraph("Fuente: " + card.references, { size: 16, color: "46505C", after: 100 }));
+    practiceChildren.push(paragraph("Clave de práctica reconstruida: A) SSH y D) HTTPS.", { bold: true, after: 60 }));
+    practiceChildren.push(paragraph("Confianza: " + card.confidence, { size: 17, after: 55 }));
+    practiceChildren.push(paragraph("Reconstrucción: " + card.reconstruction, { size: 17, after: 55 }));
+    practiceChildren.push(paragraph("Observaciones", { bold: true, size: 19, after: 50, keepNext: true }));
+    card.notes.forEach((note) => practiceChildren.push(paragraph(note, { size: 18, after: 55 })));
+    practiceChildren.push(paragraph("Fuente: " + card.references, { size: 16, color: "46505C", after: 100 }));
   }
 
-  const pendingDocument = new Document({
+  const practiceDocument = new Document({
     creator: "JoyaCards content audit",
-    title: "Redes tercer parcial 2026 preguntas pendientes",
-    description: "Companion de práctica sin respuestas puntuables para consignas cuya evidencia no permite asignar una clave",
+    title: "Práctica de netstat con clave reconstruida",
+    description: "Ejercicios de netstat con respuestas explícitamente reconstruidas para practicar",
     sections: [{
       properties: {
         page: { margin: { top: 850, right: 850, bottom: 850, left: 850 } }
       },
-      children: pendingChildren
+      children: practiceChildren
     }]
   });
 
-  await writeFile(pendingOutputFile, await Packer.toBuffer(pendingDocument));
+  await writeFile(practiceOutputFile, await Packer.toBuffer(practiceDocument));
   console.log("Generado: " + outputFile);
-  console.log("Tarjetas en el cuestionario principal: " + (cards.length + pendingCards.length));
+  console.log("Tarjetas en el cuestionario principal: " + cards.length);
   console.log("Tarjetas puntuables: " + cards.length);
-  console.log("Tarjetas de práctica sin puntuar: " + pendingCards.length);
-  console.log("Imágenes en el cuestionario principal: " + (cards.filter((card) => card.image).length + pendingCards.filter((card) => card.image).length));
-  console.log("Pendientes generados en companion sin puntuar: " + pendingCards.length);
-  console.log("Generado: " + pendingOutputFile);
+  console.log("Tarjetas de práctica netstat reconstruidas: " + netstatSourceCards.length);
+  console.log("Imágenes en el cuestionario principal: " + cards.filter((card) => card.image).length);
+  console.log("Generado: " + practiceOutputFile);
 }
 
 await main();

@@ -2,11 +2,18 @@
   {
     "id": "NETSTAT-FOTO-ORIGINAL",
     "title": "Ejercicio 1 — Captura original del parcial",
-    "label": "[FOTO | NETSTAT ORIGINAL | SIN PUNTUAR]",
+    "label": "[FOTO | NETSTAT ORIGINAL | CLAVE DE PRÁCTICA RECONSTRUIDA]",
     "source": "[FOTO] Foto completa #8; recorte ampliado #25.",
     "prompt": "La ejecución de un comando nos permite ver los puertos de los servicios que funcionan en el equipo, ¿Qué servicios puede asegurar que están corriendo en el servidor?",
     "image": "pendiente-foto-08-netstat-25.jfif",
     "imageCaption": "Captura original conservada. El texto de la consola no permite leer de forma fiable el protocolo y el estado de todas las filas.",
+    "practiceCorrectOptions": [
+      "SSH",
+      "HTTPS"
+    ],
+    "rationale": "La clave de práctica reconoce SSH por una entrada TCP del puerto 22 en estado LISTEN y HTTPS por TCP 443 en LISTEN. El número 8280 por sí solo no permite asegurar que el servicio sea HTTP. Como la foto no permite comprobar con certeza todos los caracteres, esta clave es una reconstrucción para practicar y no una transcripción verificable de la captura.",
+    "confidence": "Alta para interpretar las entradas indicadas; media para la reconstrucción de los datos de la fotografía.",
+    "reconstruction": "Sí. Se marcan SSH y HTTPS como clave de práctica acordada; la foto original no permite comprobar todos los caracteres.",
     "options": [
       "SSH",
       "FTP",
@@ -17,20 +24,28 @@
       "Telnet"
     ],
     "notes": [
-      "No puntuar ni asignar una clave con esta imagen: los puertos recordados 22, 443 y 8280 no demuestran por sí solos qué servicio está escuchando.",
-      "TCP 22 con LISTEN puede indicar SSH esperando conexiones; TCP 443 con LISTEN puede indicar HTTPS. Una fila sin LISTEN exige revisar protocolo y estado. No suponer que 8280 es HTTP."
+      "Clave de práctica reconstruida a partir de la interpretación acordada: A) SSH y D) HTTPS.",
+      "La fotografía no permite comprobar todos los caracteres. El puerto 8280 no se interpreta como HTTP únicamente por su número."
     ],
     "references": "Resumen Final RIN, PDF pp. 104–105; Filminas Unidad 5, Capa de transporte, PDF pp. 32–33. Estas fuentes ayudan a interpretar estados, pero no recuperan el texto ilegible de la consola."
   },
   {
     "id": "NETSTAT-VARIANTE-RECORDADA",
     "title": "Ejercicio 2 — Variante recordada",
-    "label": "[RECUERDO | VARIANTE NETSTAT | SIN PUNTUAR]",
+    "label": "[RECUERDO | VARIANTE NETSTAT | CLAVE DE PRÁCTICA RECONSTRUIDA]",
     "source": "[RECUERDO] Variante comunicada por el estudiante; se vincula a la consigna de la foto #8 / recorte #25.",
     "prompt": "La ejecución de un comando nos permite ver los puertos de los servicios que funcionan en el equipo, ¿Qué servicios puede asegurar que están corriendo en el servidor?",
     "image": "pendiente-foto-08-netstat-25.jfif",
     "imageCaption": "",
-    "afterImageText": "VARIANTE DEL PARCIAL (RECUERDO): Imaginá que, en una de las filas de la consola, el campo ESTADO aparece vacío en lugar de mostrar LISTEN. El resto de la captura permanece igual. Teniendo en cuenta ese cambio, respondé la misma consigna original.",
+    "afterImageText": "VARIANTE DEL PARCIAL (RECUERDO): Imaginá que la última entrada, correspondiente a UDP en el puerto 8280, presenta el campo ESTADO vacío. Las entradas TCP de los puertos 22 y 443 permanecen en LISTEN. Teniendo en cuenta ese cambio, respondé la misma consigna original.",
+    "afterImageTextMode": "annotation",
+    "practiceCorrectOptions": [
+      "SSH",
+      "HTTPS"
+    ],
+    "rationale": "En el escenario explícito de práctica, TCP 22 en LISTEN corresponde convencionalmente a SSH escuchando y TCP 443 en LISTEN a HTTPS. UDP no utiliza el estado TCP LISTEN, de modo que el campo ESTADO vacío en la entrada UDP/8280 es normal. No se puede afirmar que el puerto 8280 sea HTTP solo por su número. La fila modificada es un supuesto de práctica y no una recuperación literal de la captura del recuperatorio.",
+    "confidence": "Alta condicionada al escenario explícito de práctica; baja respecto de que la fila UDP/8280 fuera literalmente la modificada en el recuperatorio.",
+    "reconstruction": "Sí. Se supone explícitamente que la entrada UDP del puerto 8280 tiene el campo ESTADO vacío; no se afirma que así apareciera en el examen.",
     "options": [
       "SSH",
       "FTP",
@@ -41,8 +56,8 @@
       "Telnet"
     ],
     "notes": [
-      "El estudiante recuerda una variante en la que una fila no mostraba LISTEN. No se modificó ni se inventó una consola; la variante permanece pendiente hasta identificar la fila y su protocolo.",
-      "Una fila sin LISTEN no permite decidir por sí sola si un servicio está detenido: depende del protocolo y del estado que muestre el comando."
+      "La clave de práctica reconstruida marca A) SSH y D) HTTPS porque las entradas TCP 22 y TCP 443 permanecen en LISTEN en el escenario especificado.",
+      "La fila UDP/8280 con ESTADO vacío es un supuesto explícito para puntuar la variante, no un dato confirmado de la captura del recuperatorio."
     ],
     "references": "Recuerdo del estudiante. Resumen Final RIN, PDF pp. 104–105; Filminas Unidad 5, Capa de transporte, PDF pp. 32–33."
   }

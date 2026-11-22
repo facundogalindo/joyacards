@@ -138,3 +138,13 @@ La regeneración final mantuvo la importación y las claves auditadas. La compar
 - El conversor real importó **30 preguntas**, **28 justificaciones**, **0 advertencias**, con **28 calificables y 2 sin puntuar**. Ambas tarjetas importan siete opciones, una imagen JPEG y ninguna respuesta; las imágenes son idénticas y la aclaración aparece únicamente en la variante.
 - La comparación semántica entre el Word de `5b902c9` y el regenerado confirma que las 28 preguntas calificables, sus opciones, justificaciones, imágenes y claves se mantienen sin cambios.
 - Tests: backend **25/25**, frontend **11/11**; lint aprobado. El build de Vite aprobado con el aviso existente de bundle principal mayor a 500 kB (**582,34 kB**). `git diff --check` aprobado.
+
+## Corrección obligatoria — netstat con claves de práctica puntuables (22/11/2026)
+
+- Las preguntas 29 y 30 ahora son preguntas @@@ calificables del cuestionario principal. Se eliminaron de ambas el marcador y los rótulos SIN PUNTUAR.
+- La clave reconstruida para ambas es **A) SSH** y **D) HTTPS**. FTP, DNS, DHCP, HTTP y Telnet quedan incorrectas. La interfaz existente compara la selección múltiple como conjunto: exige ambas respuestas y rechaza selecciones faltantes o adicionales.
+- La pregunta 29 conserva la captura original, el enunciado y las siete opciones. La justificación aclara que la clave es de práctica y reconstruida: la imagen no permite verificar todos los caracteres. Se interpreta TCP/22 en LISTEN como SSH y TCP/443 en LISTEN como HTTPS; el número 8280 no demuestra por sí solo que sea HTTP.
+- La pregunta 30 conserva la misma captura, el enunciado y las opciones. Debajo de la imagen aparece la variante exacta que supone que la última fila es UDP/8280 con ESTADO vacío, mientras TCP/22 y TCP/443 permanecen en LISTEN. La justificación indica que UDP no usa el estado TCP LISTEN y que esa fila modificada es un supuesto de práctica, no una recuperación literal del recuperatorio.
+- El importador real reconoció **30 tarjetas, 30 calificables, 0 sin puntuar, 32 justificaciones y 0 advertencias**. Cada netstat tiene tipo multiple_choice, respuestas A y D, siete opciones y la imagen original. La prueba verifica A+D correcta; solo SSH, solo HTTPS y SSH+HTTPS+HTTP incorrectas. El resumen final incluye las 30 tarjetas.
+- La comparación semántica contra el Word del commit 656f966 confirma que las otras 28 preguntas, opciones, justificaciones, imágenes y claves permanecen iguales.
+- Tests: backend **26/26**, frontend **11/11**; lint y build aprobados. Vite conserva el aviso de bundle principal mayor a 500 kB (**582,34 kB**).

@@ -389,7 +389,7 @@ function processTextLine(line, state) {
 
     if (
       pendingQuestion === state.currentQuestion &&
-      pendingQuestion.isUnscored === true &&
+      pendingQuestion.type === "multiple_choice" &&
       pendingQuestion.hasImage &&
       pendingQuestion.image &&
       pendingQuestion.options.length === 0 &&
@@ -426,7 +426,7 @@ function processTextLine(line, state) {
   if (normalizedLine === AFTER_IMAGE_TEXT_MARKER) {
     const question = state.currentQuestion;
     if (
-      question?.isUnscored === true &&
+      question?.type === "multiple_choice" &&
       question.hasImage &&
       question.image &&
       question.options.length === 0 &&

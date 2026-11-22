@@ -343,6 +343,30 @@ test("keeps the post-image annotation separate from an unscored question", async
   assert.deepEqual(randomized.answers, []);
 });
 
+test("keeps the post-image annotation on a normally scored multiple-choice question", () => {
+  const annotation = "VARIANTE DEL PARCIAL (RECUERDO): La fila UDP/8280 tiene ESTADO vacío.";
+  const parsed = parseHtmlToQuestions([
+    "<p>@@@ 1. [RECUERDO] Which services are listening?</p>",
+    "<p>[[IMAGEN]]</p>",
+    '<p><img src="fixture://netstat" /></p>',
+    "<p>[[TEXTO_POST_IMAGEN]]</p>",
+    `<p>${annotation}</p>`,
+    "<p>a) SSH *</p>",
+    "<p>b) FTP</p>",
+    "<p>c) DNS</p>",
+    "<p>d) HTTPS *</p>"
+  ].join(""));
+  const formatted = formatQuestionsWithoutShuffle(parsed.questions)[0];
+
+  assert.equal(parsed.questions.length, 1);
+  assert.deepEqual(parsed.warnings, []);
+  assert.equal(formatted.question, "[RECUERDO] Which services are listening?");
+  assert.equal(formatted.afterImageText, annotation);
+  assert.equal(formatted.image, "fixture://netstat");
+  assert.deepEqual(formatted.answers, ["A", "D"]);
+  assert.equal(formatted.isUnscored, undefined);
+});
+
 test("does not attach justifications to drag-words questions", async () => {
   const result = await importLines([
     "@@@@@ 4. Drag words",
