@@ -1,0 +1,46 @@
+[
+  {
+    "id": "NETSTAT-FOTO-ORIGINAL",
+    "title": "Netstat: consigna original de la foto",
+    "source": "[FOTO] Foto completa #8; recorte ampliado #25.",
+    "prompt": "La ejecución de un comando nos permite ver los puertos de los servicios que funcionan en el equipo, ¿Qué servicios puede asegurar que están corriendo en el servidor?",
+    "image": "pendiente-foto-08-netstat-25.jfif",
+    "imageCaption": "Captura original conservada. El texto de la consola no permite leer de forma fiable el protocolo y el estado de todas las filas.",
+    "options": [
+      "SSH",
+      "FTP",
+      "DNS",
+      "HTTPS",
+      "DHCP",
+      "HTTP",
+      "Telnet"
+    ],
+    "notes": [
+      "No puntuar ni asignar una clave con esta imagen: los puertos recordados 22, 443 y 8280 no demuestran por sí solos qué servicio está escuchando.",
+      "TCP 22 con LISTEN puede indicar SSH esperando conexiones; TCP 443 con LISTEN puede indicar HTTPS. Una fila sin LISTEN exige revisar protocolo y estado. No suponer que 8280 es HTTP."
+    ],
+    "references": "Resumen Final RIN, PDF pp. 104–105; Filminas Unidad 5, Capa de transporte, PDF pp. 32–33. Estas fuentes ayudan a interpretar estados, pero no recuperan el texto ilegible de la consola."
+  },
+  {
+    "id": "NETSTAT-VARIANTE-RECORDADA",
+    "title": "Netstat: variante recordada con una fila sin LISTEN",
+    "source": "[RECUERDO] Variante comunicada por el estudiante; se vincula a la consigna de la foto #8 / recorte #25.",
+    "prompt": "La ejecución de un comando nos permite ver los puertos de los servicios que funcionan en el equipo, ¿Qué servicios puede asegurar que están corriendo en el servidor?",
+    "image": "pendiente-foto-08-netstat-25.jfif",
+    "imageCaption": "La captura original se repite como referencia sin editar. No representa la variante recordada: se desconoce qué fila era, su protocolo y el estado exacto.",
+    "options": [
+      "SSH",
+      "FTP",
+      "DNS",
+      "HTTPS",
+      "DHCP",
+      "HTTP",
+      "Telnet"
+    ],
+    "notes": [
+      "El estudiante recuerda una variante en la que una fila no mostraba LISTEN. No se modificó ni se inventó una consola; la variante permanece pendiente hasta identificar la fila y su protocolo.",
+      "Una fila sin LISTEN no permite decidir por sí sola si un servicio está detenido: depende del protocolo y del estado que muestre el comando."
+    ],
+    "references": "Recuerdo del estudiante. Resumen Final RIN, PDF pp. 104–105; Filminas Unidad 5, Capa de transporte, PDF pp. 32–33."
+  }
+]

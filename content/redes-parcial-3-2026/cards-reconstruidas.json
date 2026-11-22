@@ -19,8 +19,8 @@
   {
     "source": "[RECUERDO] El usuario recordó el dominio www.cadena3.com.ar; sin foto.",
     "marker": "@@",
-    "tag": "[RECUERDO | RESPUESTA ABIERTA RECREADA; OPCIONES RECONSTRUIDAS]",
-    "prompt": "Coloque el comando completo para consultar el registro DNS A del dominio www.cadena3.com.ar en Windows.",
+    "tag": "[RECUERDO | VARIANTE RECONSTRUIDA] [RESPUESTA ABIERTA ADAPTADA; OPCIONES RECONSTRUIDAS]",
+    "prompt": "Coloque el comando completo para obtener la dirección IPv4 del dominio www.cadena3.com.ar.",
     "options": [
       {"text":"nslookup -type=A www.cadena3.com.ar","correct":true},
       {"text":"nslookup -type=NS www.cadena3.com.ar","correct":false},
@@ -28,16 +28,16 @@
       {"text":"ipconfig /displaydns www.cadena3.com.ar","correct":false},
       {"text":"ping www.cadena3.com.ar","correct":false}
     ],
-    "rationale": "El registro A devuelve una dirección IPv4. El tipo NS solicita servidores de nombres y MX consulta servidores de correo. La pregunta recordada era abierta; esta versión se adapta a opción única.",
-    "references": "Resumen Final RIN, PDF pp. 110–115, especialmente p. 113; Filminas Unidad 5, Capa de aplicación, PDF pp. 14 y 19–22.",
-    "confidence": "Alta para el objetivo técnico A; media para la literalidad del enunciado y comando escrito.",
-    "reconstruction": "Sí. El dominio www.cadena3.com.ar es el dato recordado; el enunciado, el comando de respuesta y las opciones se recrearon."
+    "rationale": "El registro A devuelve una dirección IPv4. Se conserva exactamente el dominio recordado y el comando usa A para cumplir el objetivo de práctica. La consulta A fue elegida para practicar y no se confirma como dato literal del examen.",
+    "references": "Resumen Final RIN, PDF p. 113; Filminas Unidad 5, Capa de aplicación, PDF pp. 14 y 19–22. El usuario confirmó el dominio y el objetivo de práctica, 22/11/2026.",
+    "confidence": "Alta para la sintaxis del comando A y su función; baja para que la consulta A coincida con el dato literal del examen.",
+    "reconstruction": "Sí. www.cadena3.com.ar es el dominio recordado. El formato de respuesta abierta y la consulta A se eligieron para practicar; no se presentan como transcripción del parcial."
   },
   {
     "source": "[TESTIMONIO] Variante comunicada por otro estudiante; dominio www.lavoz.com.ar; sin foto.",
     "marker": "@@",
     "tag": "[TESTIMONIO | RESPUESTA ABIERTA RECREADA; OPCIONES RECONSTRUIDAS]",
-    "prompt": "Coloque el comando completo para consultar el registro DNS A del dominio www.lavoz.com.ar en Windows.",
+    "prompt": "Coloque el comando completo para obtener la dirección IPv4 del dominio www.lavoz.com.ar.",
     "options": [
       {"text":"nslookup -type=A www.lavoz.com.ar","correct":true},
       {"text":"nslookup -type=NS www.lavoz.com.ar","correct":false},
@@ -53,8 +53,8 @@
   {
     "source": "[RECUERDO] Reconstrucción del recuerdo del usuario; sin foto.",
     "marker": "@@",
-    "tag": "[RECUERDO | RECREACIÓN; OPCIONES RECONSTRUIDAS]",
-    "prompt": "¿Qué puerto TCP utiliza IMAP sin cifrado de transporte por defecto?",
+    "tag": "[RECUERDO | RECREACIÓN; MODO ACTIVO ELEGIDO PARA PRACTICAR; OPCIONES RECONSTRUIDAS]",
+    "prompt": "¿Qué puerto utiliza IMAP?",
     "options": [
       {"text":"110.","correct":false},
       {"text":"25.","correct":false},
@@ -105,7 +105,7 @@
     "source": "[RECUERDO] Reconstrucción de un recuerdo sobre empleados que se conectan desde ubicaciones externas; sin foto.",
     "marker": "@@",
     "tag": "[RECUERDO | RECREACIÓN; OPCIONES RECONSTRUIDAS]",
-    "prompt": "Una empresa necesita que sus empleados se conecten de forma segura a la red corporativa desde sus casas o desde otras ubicaciones externas. ¿Qué tipo de VPN corresponde implementar?",
+    "prompt": "Una empresa implementa una VPN para sus empleados que se conectan desde afuera. ¿Qué tipo de VPN debe configurar?",
     "options": [
       {"text":"VPN punto a punto estática, diseñada principalmente para conectar redes de sucursales.","correct":false},
       {"text":"VPN de acceso remoto, establecida dinámicamente para usuarios externos.","correct":true},
@@ -122,7 +122,7 @@
     "source": "[TESTIMONIO] Opciones recordadas: RSA, PKA, MD5 y SHA-2. No se conoce la quinta alternativa.",
     "marker": "@@",
     "tag": "[TESTIMONIO | RECREACIÓN; ENUNCIADO Y AES RECONSTRUIDOS]",
-    "prompt": "¿Qué algoritmo de cifrado simétrico puede utilizar IPsec para proporcionar confidencialidad al tráfico?",
+    "prompt": "¿Qué protocolo de cifrado usa IPsec para asegurar confidencialidad?",
     "options": [
       {"text":"RSA.","correct":false},
       {"text":"PKA (grafía recordada; significado sin confirmar).","correct":false},
@@ -130,7 +130,7 @@
       {"text":"SHA-2.","correct":false},
       {"text":"AES (opción reconstruida; no confirmada como literal del examen).","correct":true}
     ],
-    "rationale": "ESP puede cifrar la carga útil con algoritmos simétricos como AES. MD5 y SHA-2 son funciones hash; RSA no es el cifrado simétrico de los datos de ESP. PKA se conserva tal como fue recordada, sin asignarle un significado.",
+    "rationale": "Se conserva la palabra “protocolo” tal como aparece en el testimonio. Técnicamente, las opciones son algoritmos o funciones: ESP puede usar cifrado simétrico como AES para ofrecer confidencialidad; MD5 y SHA-2 son funciones hash. RSA no es el cifrado simétrico de los datos de ESP. PKA se conserva con la grafía recordada, sin asignarle un significado.",
     "references": "Resumen Final RIN, PDF pp. 125–126 (AES y funciones hash); Tanenbaum, Feamster y Wetherall (2023), Redes de computadoras, PDF pp. 843–846; Filminas Unidad 6, Seguridad, PDF pp. 37 y 39. Testimonio: 21/11/2026, 10:48.",
     "confidence": "Alta para el uso de AES en confidencialidad IPsec; baja para la literalidad del enunciado, la opción AES y la quinta opción del examen.",
     "reconstruction": "Sí. AES se agregó como opción correcta; RSA, PKA, MD5 y SHA-2 son las cuatro opciones recordadas."
@@ -138,23 +138,23 @@
   {
     "source": "[TESTIMONIO] Se recuerdan las opciones Terminales, Gatekeepers, Puertas de enlace y una cuarta opción desconocida.",
     "marker": "@@",
-    "tag": "[TESTIMONIO | RECREACIÓN; ENUNCIADO INFERIDO; CUARTA OPCIÓN OMITIDA]",
-    "prompt": "En la arquitectura H.323, ¿cómo se denominan los teléfonos o dispositivos extremos que realizan la comunicación?",
+    "tag": "[TESTIMONIO | RECREACIÓN; CUARTA OPCIÓN DESCONOCIDA OMITIDA]",
+    "prompt": "¿Cómo se llaman los teléfonos en el protocolo H.323?",
     "options": [
       {"text":"Terminales.","correct":true},
       {"text":"Gatekeepers.","correct":false},
       {"text":"Puertas de enlace (gateways).","correct":false}
     ],
-    "rationale": "Los dispositivos de los extremos de una comunicación H.323 se denominan terminales. Gatekeepers gestionan funciones de control y las puertas de enlace conectan redes IP y telefónicas. El enunciado fue inferido a partir de las alternativas recordadas; la cuarta alternativa desconocida se omitió.",
+    "rationale": "En H.323, los teléfonos o dispositivos terminales se denominan terminales. Gatekeepers gestionan funciones de control y las puertas de enlace conectan redes IP y telefónicas. Se conserva el enunciado y las tres opciones recordadas; la cuarta opción desconocida se omite.",
     "references": "Tanenbaum, Feamster y Wetherall (2023), Redes de computadoras, PDF p. 721; Filminas Unidad 5, Voz IP, PDF pp. 5–6. Testimonio: 21/11/2026, 10:48.",
-    "confidence": "Alta para el término técnico; baja para la fidelidad del enunciado y de la lista completa de alternativas.",
-    "reconstruction": "Sí. Se conservaron las tres alternativas recordadas; el enunciado se infirió y se omitió la cuarta alternativa desconocida."
+    "confidence": "Alta para el término técnico; media para la fidelidad del recuerdo y baja para la lista completa de alternativas.",
+    "reconstruction": "Sí. Se conserva el enunciado y las tres alternativas recordadas; se omite la cuarta alternativa desconocida."
   },
   {
     "source": "[TESTIMONIO] Recuerdo de una pregunta sobre abrir sucursales sin desplegar mucha infraestructura; sin foto.",
     "marker": "@@",
     "tag": "[TESTIMONIO | RECREACIÓN; OPCIONES RECONSTRUIDAS]",
-    "prompt": "Una empresa necesita abrir sucursales nuevas con frecuencia, pero quiere evitar instalar gran cantidad de infraestructura propia cada vez. ¿Qué ventaja de una VPN permite este crecimiento?",
+    "prompt": "Una empresa implementa una VPN y quiere abrir nuevas oficinas sin tener que instalar mucha infraestructura cada vez. ¿Qué ventaja le permite eso?",
     "options": [
       {"text":"Escalabilidad.","correct":true},
       {"text":"Eliminación de la necesidad de cifrado.","correct":false},

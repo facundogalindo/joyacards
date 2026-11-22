@@ -15,6 +15,7 @@ const repositoryRoot = path.resolve(scriptDirectory, "../..");
 const contentDirectory = path.join(repositoryRoot, "content", "redes-parcial-3-2026");
 const assetDirectory = path.join(contentDirectory, "assets");
 const outputFile = path.join(contentDirectory, "Redes_Parcial_3_2026_JoyaCards_Auditado.docx");
+const pendingOutputFile = path.join(contentDirectory, "Pendientes_Redes_Parcial_3_2026_Practica_Sin_Puntuar.docx");
 const letter = "abcdefghijklmnopqrstuvwxyz";
 
 async function loadCards(fileName) {
@@ -56,6 +57,7 @@ function getJpegDimensions(buffer) {
 
 function paragraph(text, settings = {}) {
   return new Paragraph({
+    pageBreakBefore: Boolean(settings.pageBreakBefore),
     keepNext: Boolean(settings.keepNext),
     keepLines: true,
     spacing: { after: settings.after ?? 75, line: 260 },
@@ -107,19 +109,29 @@ async function main() {
     loadCards("cards-reconstruidas.json")
   ]);
   const cards = cardGroups.flat();
+  const pendingCards = await loadCards("cards-pendientes.json");
 
-  if (cards.length !== 23) {
-    throw new Error("Se esperaban 23 tarjetas puntuables, se encontraron " + cards.length);
+  if (cards.length === 0) {
+    throw new Error("No hay tarjetas puntuables para generar el cuestionario");
+  }
+
+  const invalidCards = cards
+    .map((card, index) => ({
+      index: index + 1,
+      card,
+      correctCount: Array.isArray(card.options)
+        ? card.options.filter((option) => option.correct).length
+        : 0
+    }))
+    .filter(({ card, correctCount }) => !card.prompt || !Array.isArray(card.options) || correctCount !== 1);
+
+  if (invalidCards.length > 0) {
+    throw new Error("Tarjetas inválidas: " + invalidCards.map(({ index }) => index).join(", "));
   }
 
   const children = [];
   for (let index = 0; index < cards.length; index += 1) {
     const card = cards[index];
-    const correctCount = card.options.filter((option) => option.correct).length;
-    if (correctCount !== 1) {
-      throw new Error("La tarjeta " + (index + 1) + " debe tener exactamente una respuesta correcta");
-    }
-
     const prompt = (card.tag ? card.tag + " " : "") + card.prompt;
     children.push(paragraph(card.marker + " " + (index + 1) + ". " + prompt, {
       bold: true,
@@ -168,9 +180,66 @@ async function main() {
   });
 
   await writeFile(outputFile, await Packer.toBuffer(document));
+
+  const pendingChildren = [
+    paragraph("Redes tercer parcial 2026 preguntas pendientes", { bold: true, size: 32, after: 180 }),
+    paragraph("Material de práctica sin puntuar. Se conservan el enunciado, las opciones conocidas y la captura original; no se asigna una respuesta correcta cuando la evidencia no permite comprobarla.", { size: 20, after: 220 })
+  ];
+
+  for (let index = 0; index < pendingCards.length; index += 1) {
+    const card = pendingCards[index];
+    if (!card.prompt || !Array.isArray(card.options) || card.options.length === 0) {
+      throw new Error("Ejercicio pendiente inválido: " + (card.id || index + 1));
+    }
+
+    pendingChildren.push(paragraph(card.title, {
+      bold: true,
+      size: 24,
+      after: 100,
+      keepNext: true,
+      pageBreakBefore: index > 0
+    }));
+    pendingChildren.push(paragraph("[PENDIENTE | NO PUNTUAR] " + card.source, {
+      size: 17,
+      color: "8A4B08",
+      after: 80,
+      keepNext: true
+    }));
+    pendingChildren.push(paragraph(card.prompt, { bold: true, size: 22, after: 90, keepNext: true }));
+    pendingChildren.push(paragraph("[[CAPTURA ORIGINAL]]", { color: "606B79", size: 16, after: 20, keepNext: true }));
+    pendingChildren.push(await imageParagraph(card.image));
+    pendingChildren.push(paragraph(card.imageCaption, { size: 17, after: 90, keepNext: true }));
+    pendingChildren.push(paragraph("Opciones", { bold: true, size: 20, after: 55, keepNext: true }));
+    card.options.forEach((option, optionIndex) => {
+      pendingChildren.push(paragraph(String.fromCharCode(65 + optionIndex) + ") " + option, {
+        after: 45,
+        keepNext: optionIndex < card.options.length - 1
+      }));
+    });
+    pendingChildren.push(paragraph("Respuesta para revisar: ______________________________________________", { after: 80 }));
+    pendingChildren.push(paragraph("Observaciones", { bold: true, size: 19, after: 50, keepNext: true }));
+    card.notes.forEach((note) => pendingChildren.push(paragraph(note, { size: 18, after: 55 })));
+    pendingChildren.push(paragraph("Fuente: " + card.references, { size: 16, color: "46505C", after: 100 }));
+  }
+
+  const pendingDocument = new Document({
+    creator: "JoyaCards content audit",
+    title: "Redes tercer parcial 2026 preguntas pendientes",
+    description: "Companion de práctica sin respuestas puntuables para consignas cuya evidencia no permite asignar una clave",
+    sections: [{
+      properties: {
+        page: { margin: { top: 850, right: 850, bottom: 850, left: 850 } }
+      },
+      children: pendingChildren
+    }]
+  });
+
+  await writeFile(pendingOutputFile, await Packer.toBuffer(pendingDocument));
   console.log("Generado: " + outputFile);
   console.log("Tarjetas puntuables: " + cards.length);
-  console.log("Imágenes insertadas: " + cards.filter((card) => card.image).length);
+  console.log("Imágenes en el cuestionario puntuable: " + cards.filter((card) => card.image).length);
+  console.log("Pendientes generados en companion sin puntuar: " + pendingCards.length);
+  console.log("Generado: " + pendingOutputFile);
 }
 
 await main();

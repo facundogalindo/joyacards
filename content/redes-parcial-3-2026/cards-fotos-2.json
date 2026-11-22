@@ -80,5 +80,91 @@
     "references": "Resumen Final RIN, PDF pp. 98–99; Filminas Unidad 5, Capa de transporte, PDF p. 8.",
     "confidence": "Alta.",
     "reconstruction": "No. Enunciado y opciones transcritos de la foto."
+  },
+  {
+    "source": "[FOTO] Foto completa #12; recorte ampliado #21. Confirmación del estudiante: el dispositivo es Router2.",
+    "marker": "@@",
+    "tag": "[FOTO | SUBPREGUNTA 1/4; OPCIONES RECONSTRUIDAS]",
+    "prompt": "¿A qué dispositivo pertenece?",
+    "image": "foto-12-show-ip-route-recorte-21.jfif",
+    "options": [
+      {"text":"Router0.","correct":false},
+      {"text":"Router1.","correct":false},
+      {"text":"Router2.","correct":true},
+      {"text":"Router3.","correct":false}
+    ],
+    "rationale": "El estudiante confirmó que la tabla corresponde a Router2. La confirmación se usa como dato de identificación; la selección visible del menú no se toma como evidencia.",
+    "references": "Foto completa 12 / recorte 21 (topología y tabla); confirmación del estudiante de que el equipo es Router2, 22/11/2026.",
+    "confidence": "Alta para la confirmación del nombre; media para la identidad reconstruida desde la captura.",
+    "reconstruction": "El enunciado procede de la foto. Las alternativas Router0–Router3 son reconstruidas y no se presentan como opciones literales del examen."
+  },
+  {
+    "source": "[FOTO] Foto completa #12; recorte ampliado #21.",
+    "marker": "@@",
+    "tag": "[FOTO | SUBPREGUNTA 2/4; OPCIONES RECONSTRUIDAS]",
+    "prompt": "¿Cómo aprendió este router la red 192.168.30.0/24?",
+    "image": "foto-12-show-ip-route-recorte-21.jfif",
+    "options": [
+      {"text":"Mediante RIP.","correct":true},
+      {"text":"Mediante OSPF.","correct":false},
+      {"text":"Por una ruta estática.","correct":false},
+      {"text":"Porque está conectada directamente.","correct":false}
+    ],
+    "rationale": "La ruta 192.168.30.0/24 aparece con el código R, correspondiente a una ruta aprendida por RIP, y con distancia administrativa 120.",
+    "references": "Foto completa 12 / recorte 21 (tabla: R 192.168.30.0/24 [120/1]); Resumen Final RIN, PDF pp. 78–80 (RIP).",
+    "confidence": "Alta.",
+    "reconstruction": "El enunciado y la red se conservan de la foto. Las opciones están reconstruidas porque el desplegable no tiene alternativas visibles."
+  },
+  {
+    "source": "[FOTO] Foto completa #12; recorte ampliado #21.",
+    "marker": "@@",
+    "tag": "[FOTO | SUBPREGUNTA 3/4; OPCIONES RECONSTRUIDAS]",
+    "prompt": "¿Cómo aprendió este router la red 192.168.70.0/24?",
+    "image": "foto-12-show-ip-route-recorte-21.jfif",
+    "options": [
+      {"text":"A través de OSPF.","correct":false},
+      {"text":"A través de RIP.","correct":false},
+      {"text":"Porque está conectada directamente.","correct":true},
+      {"text":"Por una ruta estática.","correct":false}
+    ],
+    "rationale": "La tabla marca 192.168.70.0/24 con C y el texto “is directly connected”, por lo que la red está conectada directamente al router.",
+    "references": "Foto completa 12 / recorte 21 (tabla: C 192.168.70.0/24 is directly connected, Serial0/1/1).",
+    "confidence": "Alta.",
+    "reconstruction": "El enunciado y la red se conservan de la foto. Las opciones están reconstruidas porque el desplegable no tiene alternativas visibles."
+  },
+  {
+    "source": "[FOTO] Foto completa #12; recorte ampliado #21.",
+    "marker": "@@",
+    "tag": "[FOTO | SUBPREGUNTA 4/4; OPCIONES RECONSTRUIDAS]",
+    "prompt": "¿Qué indica el valor 1 en la expresión [120/1]?",
+    "image": "foto-12-show-ip-route-recorte-21.jfif",
+    "options": [
+      {"text":"El puerto de origen 120 y el puerto de destino 1.","correct":false},
+      {"text":"La métrica RIP: 1 salto.","correct":true},
+      {"text":"Una velocidad de 120 Mb/s y una pérdida de 1 %.","correct":false},
+      {"text":"La cantidad de hosts y una interfaz física.","correct":false}
+    ],
+    "rationale": "En la expresión [120/1], 120 es la distancia administrativa de RIP y 1 es su métrica. Para RIP, esa métrica representa un salto.",
+    "references": "Foto completa 12 / recorte 21 (tabla: R 192.168.30.0/24 [120/1]); Resumen Final RIN, PDF pp. 78–80 (métrica RIP).",
+    "confidence": "Alta.",
+    "reconstruction": "El valor preguntado se conserva de la foto. Las opciones están reconstruidas porque el desplegable no tiene alternativas visibles."
+  },
+  {
+    "source": "[FOTO] Foto completa #2; recorte ampliado #31.",
+    "marker": "@@",
+    "tag": "[FOTO | OPCIONES FOTOGRAFIADAS; CLAVE RESPALDADA POR RFC 1350]",
+    "prompt": "¿A qué tipo de directorios suele limitarse el acceso mediante TFTP?",
+    "image": "foto-02-tftp-recorte-31.jfif",
+    "options": [
+      {"text":"Privados.","correct":false},
+      {"text":"Públicos.","correct":true},
+      {"text":"Públicos y privados.","correct":false},
+      {"text":"Sólo para el personal de la empresa.","correct":false},
+      {"text":"Ninguna de las opciones.","correct":false}
+    ],
+    "rationale": "El Resumen Final RIN y las filminas describen TFTP, pero no fijan directorios accesibles. Tanenbaum (2023) no desarrolla TFTP en el material revisado. RFC 1350, sección Security Considerations (PDF p. 11), indica que es habitual configurar el servidor para ofrecer por TFTP archivos con permiso de lectura pública y deshabilitar escrituras. Es una práctica de permisos/configuración del servidor, no una restricción inherente al protocolo. En el contexto de “suele limitarse” y de estas alternativas, la mejor respuesta es “Públicos”; la RFC habla de archivos legibles públicamente, no define una categoría protocolaria de directorios públicos.",
+    "references": "Resumen Final RIN (Camila Bermejo), PDF p. 120; Filminas Unidad 5, Capa de aplicación, segunda parte, PDF pp. 7–8; RFC 1350, The TFTP Protocol (Revision 2), Security Considerations, PDF p. 11: https://www.rfc-editor.org/info/rfc1350/.",
+    "confidence": "Media: RFC 1350 respalda la práctica de acceso de lectura pública en configuraciones comunes, pero la fuente habla de archivos y permisos, no de directorios como propiedad del protocolo.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto. La respuesta se verificó en una fuente externa oficial; la marca de la foto no se usó como clave."
   }
 ]
