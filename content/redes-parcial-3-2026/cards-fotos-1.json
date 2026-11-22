@@ -1,0 +1,132 @@
+[
+  {
+    "source": "[FOTO] Foto completa #16; recorte ampliado #17.",
+    "marker": "@@",
+    "prompt": "¿Por qué las confirmaciones TCP pueden considerarse acumulativas?",
+    "options": [
+      {"text":"Porque una confirmación puede reconocer correctamente varios bytes anteriores.","correct":true},
+      {"text":"Porque TCP confirma solamente el último segmento.","correct":false},
+      {"text":"Porque cada paquete transporta múltiples conexiones.","correct":false},
+      {"text":"Porque cada ACK contiene todas las direcciones IP.","correct":false},
+      {"text":"Porque se suman todos los puertos utilizados.","correct":false}
+    ],
+    "rationale": "Un ACK acumulativo reconoce los bytes recibidos en orden hasta el byte anterior al número esperado que anuncia TCP.",
+    "references": "Resumen Final RIN, PDF pp. 99–102; Filminas Unidad 5, Capa de transporte, PDF pp. 14–15.",
+    "confidence": "Alta.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto."
+  },
+  {
+    "source": "[FOTO] Foto completa #15; recorte ampliado #18.",
+    "marker": "@@",
+    "prompt": "¿Qué característica de TCP permite que el receptor identifique datos duplicados?",
+    "options": [
+      {"text":"La dirección MAC origen.","correct":false},
+      {"text":"El registro DNS.","correct":false},
+      {"text":"Los números de secuencia.","correct":true},
+      {"text":"El campo TTL.","correct":false},
+      {"text":"El puerto de destino exclusivamente.","correct":false}
+    ],
+    "rationale": "Los números de secuencia sitúan los bytes dentro del flujo TCP y permiten reconocer datos repetidos o fuera de orden.",
+    "references": "Resumen Final RIN, PDF pp. 99–100; Filminas Unidad 5, Capa de transporte, PDF pp. 14–15.",
+    "confidence": "Alta.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto."
+  },
+  {
+    "source": "[FOTO] Foto completa #14; recorte ampliado #19.",
+    "marker": "@@",
+    "prompt": "En una comunicación basada en SIP, ¿Qué diferencia funcional existe entre la señalización y el transporte de medios?",
+    "options": [
+      {"text":"SIP establece, administra y termina la sesión, mientras que RTP/RTCP se utilizan para transportar los flujos de audio, video o datos.","correct":true},
+      {"text":"SIP codifica las muestras de voz, mientras que RTP/RTCP determinan la ubicación de los participantes.","correct":false},
+      {"text":"SIP y RTP/RTCP realizan la misma función, diferenciándose únicamente por el protocolo de transporte utilizado.","correct":false},
+      {"text":"SIP transporta directamente las muestras de audio, mientras que RTP/RTCP establecen y terminan la sesión.","correct":false},
+      {"text":"SIP se limita a reservar ancho de banda, mientras que RTP/RTCP gestionan el establecimiento y la terminación de la sesión.","correct":false}
+    ],
+    "rationale": "SIP maneja el establecimiento y el control de sesiones; RTP transporta los medios y RTCP informa sobre esos flujos.",
+    "references": "Tanenbaum, Feamster y Wetherall (2023), Redes de computadoras, PDF pp. 724–725; Filminas Unidad 5, Voz IP, PDF pp. 17–18.",
+    "confidence": "Alta.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto."
+  },
+  {
+    "source": "[FOTO] Foto completa #13; recorte ampliado #20.",
+    "marker": "@@",
+    "prompt": "¿Qué elemento utiliza la capa de transporte para identificar los procesos de aplicación que se ejecutan en un servidor o en un equipo de usuario?",
+    "options": [
+      {"text":"El número de protocolo contenido en el encabezado IP.","correct":false},
+      {"text":"La dirección física de la interfaz utilizada para transmitir la trama.","correct":false},
+      {"text":"Los números de puerto asociados a los procesos de aplicación.","correct":true},
+      {"text":"La dirección IP asignada a la interfaz de red.","correct":false},
+      {"text":"El identificador de la red a la que pertenece el equipo.","correct":false}
+    ],
+    "rationale": "La capa de transporte utiliza los puertos para entregar los segmentos a los procesos de aplicación del host.",
+    "references": "Resumen Final RIN, PDF pp. 98–100; Filminas Unidad 5, Capa de transporte, PDF p. 5.",
+    "confidence": "Alta.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto."
+  },
+  {
+    "source": "[FOTO] Foto completa #11; recorte ampliado #22.",
+    "marker": "@@",
+    "prompt": "Me encuentro ubicado en el equipo con IP 192.168.50.102/24 (VERDE) y necesito realizar Telnet al equipo 172.16.170.155/24 (ROJO) pasando por el firewall que tiene esta configuración adaptada",
+    "image": "foto-11-firewall-telnet-origen-22.jfif",
+    "afterImageText": "¿Qué sucederá?",
+    "options": [
+      {"text":"La conexión será exitosa por la política implementada en el firewall.","correct":false},
+      {"text":"La conexión será exitosa ya que hay una regla que permite el paso del protocolo ICMP de toda la red VERDE a la IP destino.","correct":false},
+      {"text":"La conexión será bloqueada debido a la regla 5.","correct":true},
+      {"text":"La conexión será bloqueada por la política implementada en el firewall.","correct":false},
+      {"text":"La conexión será exitosa debido a la regla 5.","correct":false}
+    ],
+    "rationale": "La regla 5 de la captura coincide con TCP desde GREEN hacia RED por Telnet y su acción descarta/rechaza. La política permisiva es un respaldo y no anula una regla coincidente anterior.",
+    "references": "Foto completa #11/recorte #22; Resumen Final RIN, PDF p. 128 (firewalls); Lectura de reglas del firewall IPFire, PDF pp. 2 y 4 (acción, orden y política).",
+    "confidence": "Alta.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto; respuesta verificada con la regla visible y la guía de interpretación."
+  },
+  {
+    "source": "[FOTO] Foto completa #10; recorte ampliado #23.",
+    "marker": "@@",
+    "prompt": "Bruno conserva un documento recibido de Ana y la información criptográfica asociada a su firma. Tiempo después, Ana niega haberlo enviado. ¿Qué procedimiento permite a un tercero comprobar técnicamente la relación entre Ana y el documento?",
+    "options": [
+      {"text":"Aplicar la clave privada de Ana al documento conservado y comparar el resultado con la información criptográfica originalmente recibida.","correct":false},
+      {"text":"Aplicar la clave pública de Bruno a la información generada mediante la clave privada de Ana y comparar el resultado con el documento presentado.","correct":false},
+      {"text":"Aplicar la clave pública de Ana a la información generada mediante su clave privada y comprobar que el resultado corresponde al documento presentado.","correct":true},
+      {"text":"Aplicar la clave privada de Bruno a la información asociada a la firma y comprobar si el resultado corresponde al documento presentado.","correct":false},
+      {"text":"Aplicar la clave pública de Ana directamente al documento y comparar el resultado con la información generada por Bruno al recibirlo.","correct":false}
+    ],
+    "rationale": "La firma se verifica con la clave pública de Ana y se contrasta con el resumen del documento. La clave privada permanece en poder de quien firma.",
+    "references": "Resumen Final RIN, PDF pp. 126–127; Filminas Unidad 6, Seguridad, PDF pp. 19–23.",
+    "confidence": "Alta.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto."
+  },
+  {
+    "source": "[FOTO] Foto completa #9; recorte ampliado #24.",
+    "marker": "@@",
+    "prompt": "Una empresa reemplaza un enlace dedicado por una VPN que utiliza conectividad a Internet. Posteriormente observa que la capacidad disponible no presenta siempre el mismo comportamiento que tenía el enlace exclusivo. ¿Qué característica explica esta diferencia?",
+    "options": [
+      {"text":"El túnel convierte la capacidad pública disponible en una capacidad física constante durante toda la comunicación.","correct":false},
+      {"text":"La VPN controla los recursos de todos los proveedores atravesados, aunque no controla las aplicaciones que generan tráfico.","correct":false},
+      {"text":"Una VPN reserva capacidad fija en Internet, pero la distribuye entre todas las aplicaciones de la organización.","correct":false},
+      {"text":"La organización no controla completamente los recursos subyacentes de Internet, por lo que el rendimiento puede variar con la conectividad utilizada.","correct":true},
+      {"text":"La utilización de una VPN elimina la variación de rendimiento de Internet mediante la virtualización de los enlaces.","correct":false}
+    ],
+    "rationale": "La VPN crea un túnel sobre Internet, pero no convierte la infraestructura pública compartida en un enlace dedicado ni garantiza capacidad fija. La variación de rendimiento es una inferencia del uso de esa infraestructura.",
+    "references": "Resumen Final RIN, PDF p. 129; Filminas Unidad 6, Seguridad, PDF pp. 42–45.",
+    "confidence": "Media: la explicación se infiere de que la VPN usa Internet pública; la fuente no enuncia literalmente la variación de capacidad.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto; la explicación teórica es una inferencia identificada."
+  },
+  {
+    "source": "[FOTO] Foto completa #7; recorte ampliado #26.",
+    "marker": "@@",
+    "prompt": "Una organización dispone de un firewall perimetral que controla correctamente las comunicaciones entre su red corporativa e Internet. Un equipo perteneciente a la propia red interna es comprometido y comienza a realizar acciones contra otros sistemas internos. ¿Qué limitación del firewall perimetral queda expuesta en esta situación?",
+    "options": [
+      {"text":"Todo tráfico generado dentro de la organización atraviesa necesariamente el firewall perimetral antes de alcanzar otro equipo de la misma red.","correct":false},
+      {"text":"Una amenaza originada dentro de la red obliga al firewall a desactivar temporalmente las reglas aplicadas al tráfico externo.","correct":false},
+      {"text":"El firewall perimetral solo puede aplicar reglas a equipos internos cuando estos utilizan direcciones IP públicas.","correct":false},
+      {"text":"El firewall perimetral deja de poder filtrar conexiones provenientes de Internet cuando detecta tráfico entre equipos internos.","correct":false},
+      {"text":"El control situado en el perímetro puede no intervenir cuando el tráfico malicioso se origina y permanece dentro de la red protegida.","correct":true}
+    ],
+    "rationale": "Un firewall perimetral inspecciona el tráfico que cruza el perímetro. La comunicación maliciosa que permanece dentro de la red puede no pasar por él.",
+    "references": "Resumen Final RIN, PDF pp. 127–128; TP28, Preguntas Diagnóstico, PDF p. 1.",
+    "confidence": "Alta.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto."
+  }
+]

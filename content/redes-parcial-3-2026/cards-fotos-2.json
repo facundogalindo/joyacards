@@ -1,0 +1,84 @@
+﻿[
+  {
+    "source": "[FOTO] Foto completa #6; recorte ampliado #27.",
+    "marker": "@@",
+    "prompt": "En https://www.ejemplo.com/documentos/code.pdf, ¿Qué representa https?",
+    "options": [
+      {"text":"El nombre del objeto solicitado dentro de la ruta indicada.","correct":false},
+      {"text":"La ruta utilizada para localizar el recurso dentro del servidor.","correct":false},
+      {"text":"El esquema o protocolo utilizado para acceder al recurso.","correct":true},
+      {"text":"El nombre DNS del servidor que aloja el recurso.","correct":false},
+      {"text":"El componente de consulta utilizado para enviar parámetros asociados al recurso.","correct":false}
+    ],
+    "rationale": "En la URL, https es el esquema que identifica el protocolo de acceso; el host es www.ejemplo.com y la ruta comienza en /documentos/.",
+    "references": "Filminas Unidad 5, Capa de aplicación, segunda parte, PDF pp. 25–26.",
+    "confidence": "Alta.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto."
+  },
+  {
+    "source": "[FOTO] Foto completa #5; recorte ampliado #28.",
+    "marker": "@@",
+    "prompt": "¿Qué función puede realizar un terminal H.323?",
+    "options": [
+      {"text":"Interconectar el entorno H.323 con la red telefónica mediante protocolos PSTN.","correct":false},
+      {"text":"Actuar como elemento central de control de todos los puntos finales pertenecientes a una zona H.323.","correct":false},
+      {"text":"Originar o recibir comunicaciones multimedia.","correct":true},
+      {"text":"Controlar los puntos terminales que se encuentran bajo su jurisdicción dentro de una zona.","correct":false},
+      {"text":"Autorizar las solicitudes de admisión y asignar ancho de banda a las terminales de una zona.","correct":false}
+    ],
+    "rationale": "El terminal H.323 es un extremo que origina o recibe comunicaciones multimedia. Gateways interconectan redes; gatekeepers gestionan admisión y control de la zona.",
+    "references": "Tanenbaum, Feamster y Wetherall (2023), Redes de computadoras, PDF pp. 720–723; Filminas Unidad 5, Voz IP, PDF pp. 5–6.",
+    "confidence": "Alta.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto."
+  },
+  {
+    "source": "[FOTO] Foto completa #4; recorte ampliado #29.",
+    "marker": "@@",
+    "prompt": "Sabemos que el espacio de nombres del DNS es jerárquico y se divide en dominios. ¿En qué categorías se dividen los dominios de nivel superior?",
+    "options": [
+      {"text":"Gubernamentales y comerciales.","correct":false},
+      {"text":"Comercial y países.","correct":false},
+      {"text":"Ninguna de las opciones.","correct":false},
+      {"text":"Educativos y comerciales.","correct":false},
+      {"text":"Genéricos y de código de país.","correct":true}
+    ],
+    "rationale": "La clasificación general distingue dominios de nivel superior genéricos (gTLD) y de código de país (ccTLD).",
+    "references": "Resumen Final RIN, PDF p. 111; Filminas Unidad 5, Capa de aplicación, PDF p. 5.",
+    "confidence": "Alta.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto."
+  },
+  {
+    "source": "[FOTO] Foto completa #3; recorte ampliado #30. La foto original solicita respuesta abierta.",
+    "marker": "@@",
+    "tag": "[FOTO | RESPUESTA ABIERTA ADAPTADA A OPCIÓN ÚNICA; OPCIONES RECONSTRUIDAS]",
+    "prompt": "Coloque el comando completo que utilizaría para averiguar información sobre el servidor de resolución de nombres del dominio instagram.com en Windows (coloque el comando COMPLETO con las opciones del mismo en caso de corresponder, no agregue texto ni espacios de más)",
+    "image": "foto-14-nslookup-instagram-original-abierta-30.jfif",
+    "options": [
+      {"text":"nslookup instagram.com","correct":false},
+      {"text":"nslookup -type=NS instagram.com","correct":true},
+      {"text":"nslookup -type=A instagram.com","correct":false},
+      {"text":"nslookup -type=MX instagram.com","correct":false},
+      {"text":"ipconfig /displaydns","correct":false}
+    ],
+    "rationale": "El registro NS identifica los servidores de nombres asociados al dominio. La forma de comando de una sola línea se reconstruyó para que JoyaCards pueda evaluarla; el original de la foto solicita una respuesta escrita.",
+    "references": "Resumen Final RIN, PDF p. 113 (nslookup); Filminas Unidad 5, Capa de aplicación, PDF pp. 16 y 19–22 (registros NS/A y consultas DNS).",
+    "confidence": "Media: la consigna apunta a servidores de nombres, pero la respuesta NS y las alternativas se reconstruyeron desde la pregunta abierta.",
+    "reconstruction": "Sí. Se preservó el enunciado; opciones y respuesta de opción única reconstruidas para la limitación del formato JoyaCards."
+  },
+  {
+    "source": "[FOTO] Foto completa #1; recorte ampliado #32.",
+    "marker": "@@",
+    "prompt": "¿Qué característica NO implica necesariamente un servicio orientado a conexión?",
+    "options": [
+      {"text":"Mantenimiento de estado durante la comunicación.","correct":false},
+      {"text":"Coordinación entre los extremos.","correct":false},
+      {"text":"Liberación posterior de la conexión.","correct":false},
+      {"text":"Existencia de un circuito físico dedicado.","correct":true},
+      {"text":"Existencia de una fase de establecimiento.","correct":false}
+    ],
+    "rationale": "Un servicio orientado a conexión puede mantener estado y tener fases de establecimiento y liberación sin reservar un circuito físico dedicado.",
+    "references": "Resumen Final RIN, PDF pp. 98–99; Filminas Unidad 5, Capa de transporte, PDF p. 8.",
+    "confidence": "Alta.",
+    "reconstruction": "No. Enunciado y opciones transcritos de la foto."
+  }
+]
