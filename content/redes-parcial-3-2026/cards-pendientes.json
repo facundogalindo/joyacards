@@ -2,7 +2,7 @@
   {
     "id": "NETSTAT-FOTO-ORIGINAL",
     "title": "Ejercicio 1 — Captura original del parcial",
-    "label": "[FOTO | CONSIGNA ORIGINAL | PENDIENTE]",
+    "label": "[FOTO | NETSTAT ORIGINAL | SIN PUNTUAR]",
     "source": "[FOTO] Foto completa #8; recorte ampliado #25.",
     "prompt": "La ejecución de un comando nos permite ver los puertos de los servicios que funcionan en el equipo, ¿Qué servicios puede asegurar que están corriendo en el servidor?",
     "image": "pendiente-foto-08-netstat-25.jfif",
@@ -25,7 +25,7 @@
   {
     "id": "NETSTAT-VARIANTE-RECORDADA",
     "title": "Ejercicio 2 — Variante recordada",
-    "label": "[RECUERDO | VARIANTE DEL PARCIAL | PENDIENTE]",
+    "label": "[RECUERDO | VARIANTE NETSTAT | SIN PUNTUAR]",
     "source": "[RECUERDO] Variante comunicada por el estudiante; se vincula a la consigna de la foto #8 / recorte #25.",
     "prompt": "La ejecución de un comando nos permite ver los puertos de los servicios que funcionan en el equipo, ¿Qué servicios puede asegurar que están corriendo en el servidor?",
     "image": "pendiente-foto-08-netstat-25.jfif",

@@ -255,6 +255,31 @@ input {
   background: #f9fafb;
 }
 
+.after-image-annotation {
+  max-width: 760px;
+  margin: -8px auto 16px;
+  padding: 11px 14px;
+  border-left: 4px solid #64748b;
+  border-radius: 0 8px 8px 0;
+  background: #f3f4f6;
+  color: #374151;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.unscored-notice {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 8px;
+  margin: 12px 0;
+  padding: 11px 14px;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #1e3a8a;
+}
+
 .options {
   display: flex;
   flex-direction: column;
@@ -1635,6 +1660,18 @@ input {
 .app-shell[data-theme="dark"] .question-image {
   border-color: #374151;
   background: #111827;
+}
+
+.app-shell[data-theme="dark"] .after-image-annotation {
+  border-left-color: #94a3b8;
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+.app-shell[data-theme="dark"] .unscored-notice {
+  border-color: #1d4ed8;
+  background: #172554;
+  color: #dbeafe;
 }
 
 .app-shell[data-theme="dark"] .option {

@@ -17,6 +17,27 @@ export function areAnswersCorrect(selectedAnswers, correctAnswers) {
   return selectedAnswers.every((answer) => correctAnswers.includes(answer));
 }
 
+export function toggleAnswerSelection(selectedAnswers, letter) {
+  return selectedAnswers.includes(letter)
+    ? selectedAnswers.filter((answer) => answer !== letter)
+    : [...selectedAnswers, letter];
+}
+
+export function canAdvanceQuizQuestion(question, result) {
+  return question?.isUnscored === true || Boolean(result);
+}
+
+export function summarizeQuiz(questions, correctCount) {
+  const unscoredCount = questions.filter((question) => question.isUnscored === true).length;
+
+  return {
+    presentedCount: questions.length,
+    scoreableCount: questions.length - unscoredCount,
+    unscoredCount,
+    correctCount
+  };
+}
+
 function getCorrectDropdownOption(item) {
   if (item.answerOptionId) {
     return item.options.find((option) => option.id === item.answerOptionId);

@@ -11,7 +11,10 @@ import {
 import {
   areAnswersCorrect,
   areMultiDropdownAnswersCorrect,
-  prepareQuizQuestions
+  canAdvanceQuizQuestion,
+  prepareQuizQuestions,
+  summarizeQuiz,
+  toggleAnswerSelection
 } from "../src/utils/quizUtils.js";
 import {
   readJustificationsEnabled,
@@ -172,6 +175,62 @@ test("frontend shuffle keeps correctness and reasons together for duplicate text
   assert.equal(correct.justification, "Right reason");
   assert.deepEqual(shuffled.answers, ["B"]);
   assert.equal(areAnswersCorrect(["B"], shuffled.answers), true);
+});
+
+test("unscored multiple-choice cards retain checkbox selection without a key", () => {
+  const question = {
+    type: "multiple_choice",
+    question: "Which services are shown?",
+    isUnscored: true,
+    options: [
+      { id: "ssh", letter: "A", text: "SSH", isCorrect: false },
+      { id: "ftp", letter: "B", text: "FTP", isCorrect: false },
+      { id: "dns", letter: "C", text: "DNS", isCorrect: false }
+    ],
+    answers: []
+  };
+  const previousRandom = Math.random;
+  Math.random = () => 0;
+  const shuffled = prepareQuizQuestions([question], 1)[0];
+  Math.random = previousRandom;
+
+  const selectedOnce = toggleAnswerSelection([], "A");
+  const selectedTwice = toggleAnswerSelection(selectedOnce, "B");
+  const deselected = toggleAnswerSelection(selectedTwice, "A");
+
+  assert.equal(shuffled.type, "multiple_choice");
+  assert.equal(shuffled.isUnscored, true);
+  assert.deepEqual(shuffled.answers, []);
+  assert.ok(shuffled.options.every((option) => option.isCorrect === false));
+  assert.deepEqual(selectedTwice, ["A", "B"]);
+  assert.deepEqual(deselected, ["B"]);
+});
+
+test("unscored cards can advance without a result and are excluded from the selected quiz denominator", () => {
+  const scoreable = { type: "single_choice" };
+  const unscored = { type: "multiple_choice", isUnscored: true };
+
+  assert.equal(canAdvanceQuizQuestion(scoreable, null), false);
+  assert.equal(canAdvanceQuizQuestion(scoreable, { isCorrect: false }), true);
+  assert.equal(canAdvanceQuizQuestion(unscored, null), true);
+  assert.deepEqual(
+    summarizeQuiz([scoreable, unscored, scoreable], 1),
+    {
+      presentedCount: 3,
+      scoreableCount: 2,
+      unscoredCount: 1,
+      correctCount: 1
+    }
+  );
+  assert.deepEqual(
+    summarizeQuiz(Array.from({ length: 30 }, (_, index) => ({ isUnscored: index >= 28 })), 17),
+    {
+      presentedCount: 30,
+      scoreableCount: 28,
+      unscoredCount: 2,
+      correctCount: 17
+    }
+  );
 });
 
 test("multi-dropdown answer checks use option identity when labels repeat", () => {

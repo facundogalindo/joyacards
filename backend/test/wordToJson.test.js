@@ -263,6 +263,86 @@ test("supports multiple choice with explanations on selected answers", async () 
   assert.equal(result.justificationCount, 1);
 });
 
+test("imports explicitly marked multiple-choice practice without an answer key", async () => {
+  const result = await importLines([
+    "@@@ 1. Which services are shown?",
+    "[[SIN_PUNTUAR]]",
+    "a) SSH",
+    "b) FTP",
+    "c) DNS"
+  ]);
+
+  assert.equal(result.total, 1);
+  assert.deepEqual(result.warnings, []);
+  assert.equal(result.questions[0].type, "multiple_choice");
+  assert.equal(result.questions[0].isUnscored, true);
+  assert.deepEqual(result.questions[0].answers, []);
+  assert.ok(result.questions[0].options.every((option) => option.isCorrect === false));
+});
+
+test("does not import unmarked or unsupported zero-answer questions", async () => {
+  const unmarked = await importLines([
+    "@@@ 1. Unmarked question",
+    "a) First",
+    "b) Second"
+  ]);
+  const wrongType = await importLines([
+    "@@ 1. Marker on a single-choice question",
+    "[[SIN_PUNTUAR]]",
+    "a) First",
+    "b) Second"
+  ]);
+  const misplacedMarker = await importLines([
+    "@@@ 1. Marker after options is too late",
+    "a) First",
+    "[[SIN_PUNTUAR]]",
+    "b) Second"
+  ]);
+  const markedWithAnswer = await importLines([
+    "@@@ 1. Marker cannot erase an answer key",
+    "[[SIN_PUNTUAR]]",
+    "a) First *",
+    "b) Second"
+  ]);
+
+  assert.equal(unmarked.total, 0);
+  assert.equal(wrongType.total, 0);
+  assert.equal(misplacedMarker.total, 0);
+  assert.equal(markedWithAnswer.total, 0);
+});
+
+test("keeps the post-image annotation separate from an unscored question", async () => {
+  const annotation = "VARIANTE DEL PARCIAL (RECUERDO): La fila recordada no muestra LISTEN.";
+  const parsed = parseHtmlToQuestions([
+    "<p>@@@ 1. Which services are shown?</p>",
+    "<p>[[SIN_PUNTUAR]]</p>",
+    "<p>[[IMAGEN]]</p>",
+    '<p><img src="fixture://netstat" /></p>',
+    "<p>[[TEXTO_POST_IMAGEN]]</p>",
+    `<p>${annotation}</p>`,
+    "<p>a) SSH</p>",
+    "<p>b) FTP</p>"
+  ].join(""));
+  const formatted = formatQuestionsWithoutShuffle(parsed.questions);
+
+  assert.equal(parsed.questions.length, 1);
+  assert.equal(parsed.warnings.length, 0);
+  assert.equal(formatted[0].question, "Which services are shown?");
+  assert.equal(formatted[0].image, "fixture://netstat");
+  assert.equal(formatted[0].hasImage, true);
+  assert.equal(formatted[0].afterImageText, annotation);
+  assert.equal(formatted[0].options.length, 2);
+  assert.deepEqual(formatted[0].answers, []);
+
+  const previousRandom = Math.random;
+  Math.random = () => 0;
+  const randomized = randomizeQuestionOptions(parsed.questions[0]);
+  Math.random = previousRandom;
+  assert.equal(randomized.isUnscored, true);
+  assert.equal(randomized.afterImageText, annotation);
+  assert.deepEqual(randomized.answers, []);
+});
+
 test("does not attach justifications to drag-words questions", async () => {
   const result = await importLines([
     "@@@@@ 4. Drag words",

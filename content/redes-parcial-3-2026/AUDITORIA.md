@@ -128,3 +128,13 @@ Resultados de la nueva iteración:
 - `git diff --check` y la validación de sintaxis de los cuatro JSON fuente pasan.
 
 La regeneración final mantuvo la importación y las claves auditadas. La comparación entre el DOCX previo y el actual confirma que en H.323 solo cambiaron la etiqueta y la capitalización visible A/B/C; la respuesta y la justificación no variaron. El resto de las preguntas, respuestas y justificaciones quedó igual. El cuadernillo auxiliar conserva ambas versiones de netstat sin asignar respuestas.
+
+## Corrección final — netstat integrado al cuestionario principal (22/11/2026)
+
+- El Word principal se regenera desde las fuentes auditadas y ahora contiene **30 tarjetas: 28 calificables y 2 de práctica sin puntuación**. El cuadernillo auxiliar se conserva como material adicional.
+- Las tarjetas netstat se agregan con `@@@` (selección múltiple), la misma consigna, las siete opciones originales y la misma captura. Sus rótulos son `[FOTO | NETSTAT ORIGINAL | SIN PUNTUAR]` y `[RECUERDO | VARIANTE NETSTAT | SIN PUNTUAR]`.
+- El Word usa `[[SIN_PUNTUAR]]` explícitamente. El importador solo acepta preguntas de selección múltiple marcadas, con alternativas y sin ninguna respuesta correcta. Una pregunta ordinaria sin clave sigue descartándose. La nota de la variante viaja con `[[TEXTO_POST_IMAGEN]]` y queda debajo de la imagen y antes de las opciones.
+- JoyaCards presenta ambas como práctica sin puntuación, permite elegir varias alternativas y ofrece **Continuar sin puntuar**. No muestra resultado ni clave para esas tarjetas y no las suma al puntaje. El resumen y el denominador se calculan según las tarjetas calificables incluidas en la sesión.
+- El conversor real importó **30 preguntas**, **28 justificaciones**, **0 advertencias**, con **28 calificables y 2 sin puntuar**. Ambas tarjetas importan siete opciones, una imagen JPEG y ninguna respuesta; las imágenes son idénticas y la aclaración aparece únicamente en la variante.
+- La comparación semántica entre el Word de `5b902c9` y el regenerado confirma que las 28 preguntas calificables, sus opciones, justificaciones, imágenes y claves se mantienen sin cambios.
+- Tests: backend **25/25**, frontend **11/11**; lint aprobado. El build de Vite aprobado con el aviso existente de bundle principal mayor a 500 kB (**582,34 kB**). `git diff --check` aprobado.

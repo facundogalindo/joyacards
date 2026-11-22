@@ -5,8 +5,11 @@ import { uploadWordToJson } from "./services/wordApi";
 import {
   areAnswersCorrect,
   areMultiDropdownAnswersCorrect,
+  canAdvanceQuizQuestion,
   formatTime,
-  prepareQuizQuestions
+  prepareQuizQuestions,
+  summarizeQuiz,
+  toggleAnswerSelection
 } from "./utils/quizUtils.js";
 import {
   readJustificationsEnabled,
@@ -169,14 +172,7 @@ function App() {
 
   function toggleMultipleAnswer(letter) {
     if (result) return;
-
-    setSelectedAnswers((previousAnswers) => {
-      if (previousAnswers.includes(letter)) {
-        return previousAnswers.filter((answer) => answer !== letter);
-      }
-
-      return [...previousAnswers, letter];
-    });
+    setSelectedAnswers((previousAnswers) => toggleAnswerSelection(previousAnswers, letter));
   }
 
   function handleMultiDropdownChange(itemId, value) {
@@ -195,6 +191,7 @@ function App() {
 
   function verifyAnswer() {
     const currentQuestion = quizQuestions[currentIndex];
+    if (!currentQuestion || currentQuestion.isUnscored === true) return;
 
     let isCorrect;
 
@@ -232,7 +229,8 @@ function App() {
   }
 
   function goToNextQuestion() {
-    if (!result) {
+    const currentQuestion = quizQuestions[currentIndex];
+    if (!canAdvanceQuizQuestion(currentQuestion, result)) {
       alert("Primero tenés que verificar la respuesta");
       return;
     }
@@ -246,8 +244,9 @@ function App() {
       return;
     }
 
+    const summary = summarizeQuiz(quizQuestions, correctCount);
     alert(
-      `Terminaste el simulacro\nCorrectas: ${correctCount} de ${quizQuestions.length}\nTiempo: ${formatTime(elapsedSeconds)}`
+      `Terminaste el simulacro\nTarjetas presentadas: ${summary.presentedCount}\nCalificables: ${summary.scoreableCount}\nPráctica sin puntuación: ${summary.unscoredCount}\nCorrectas: ${summary.correctCount} de ${summary.scoreableCount}\nTiempo: ${formatTime(elapsedSeconds)}`
     );
 
     setQuizQuestions([]);
@@ -487,6 +486,7 @@ function App() {
   }
 
   const currentQuestion = quizQuestions[currentIndex];
+  const quizSummary = summarizeQuiz(quizQuestions, correctCount);
 
   if (currentPage === "builder") {
     return (
@@ -595,7 +595,7 @@ function App() {
             <div className="quiz-stats">
               <span>Tiempo: {formatTime(elapsedSeconds)}</span>
               <span>
-                Correctas: {correctCount} / {quizQuestions.length}
+                Correctas: {correctCount} / {quizSummary.scoreableCount}
               </span>
             </div>
 
@@ -640,11 +640,32 @@ function App() {
             />
           )}
 
+          {currentQuestion.afterImageText && (
+            <p className="after-image-annotation">{currentQuestion.afterImageText}</p>
+          )}
+
+          {currentQuestion.isUnscored === true && (
+            <div className="unscored-notice" role="status">
+              <strong>Práctica sin puntuación</strong>
+              <span>Esta tarjeta no afecta el resultado del simulacro.</span>
+            </div>
+          )}
+
           {renderQuestionInput(currentQuestion)}
 
-          {!result && <button onClick={verifyAnswer}>Verificar</button>}
+          {!result && currentQuestion.isUnscored !== true && (
+            <button onClick={verifyAnswer}>Verificar</button>
+          )}
 
-          {result && (
+          {currentQuestion.isUnscored === true && (
+            <button onClick={goToNextQuestion}>
+              {currentIndex === quizQuestions.length - 1
+                ? "Finalizar sin puntuar"
+                : "Continuar sin puntuar"}
+            </button>
+          )}
+
+          {result && currentQuestion.isUnscored !== true && (
             <div className="result">
               {result.isCorrect ? (
                 <div className="correct-result">

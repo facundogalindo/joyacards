@@ -6,6 +6,8 @@ const OPTION_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const IMAGE_REFERENCE_PREFIX = "joyacards-image://";
 const JUSTIFICATION_START = "[[JUSTIFICACION]]";
 const JUSTIFICATION_END = "[[FIN_JUSTIFICACION]]";
+const UNSCORED_MARKER = "[[SIN_PUNTUAR]]";
+const AFTER_IMAGE_TEXT_MARKER = "[[TEXTO_POST_IMAGEN]]";
 const ITEM_JUSTIFICATION_PATTERN = /^\[\[JUSTIFICACION_ITEM_(\d+)_OPCION_(\d+)\]\]$/i;
 
 const QUESTION_TYPES = {
@@ -375,8 +377,66 @@ function processTextLine(line, state) {
     return;
   }
 
+  if (state.pendingAfterImageTextQuestion) {
+    const pendingQuestion = state.pendingAfterImageTextQuestion;
+    state.pendingAfterImageTextQuestion = null;
+    const isAnnotationText =
+      line.trim() &&
+      !parseOptionLine(line) &&
+      !parseQuestionLine(line) &&
+      !isImageMarker(line) &&
+      !/^\[\[/.test(line.trim());
+
+    if (
+      pendingQuestion === state.currentQuestion &&
+      pendingQuestion.isUnscored === true &&
+      pendingQuestion.hasImage &&
+      pendingQuestion.image &&
+      pendingQuestion.options.length === 0 &&
+      isAnnotationText
+    ) {
+      pendingQuestion.afterImageText = line.trim();
+      return;
+    }
+
+    addWarning(state, "invalid_post_image_text", pendingQuestion);
+  }
+
   if (normalizedLine === JUSTIFICATION_END) {
     addWarning(state, "unexpected_justification_end");
+    return;
+  }
+
+  if (normalizedLine === UNSCORED_MARKER) {
+    const question = state.currentQuestion;
+    if (
+      question &&
+      question.type === "multiple_choice" &&
+      question.isUnscored !== true &&
+      question.options.length === 0
+    ) {
+      question.isUnscored = true;
+    } else {
+      addWarning(state, "invalid_unscored_marker", question);
+    }
+    state.lastOptionTarget = null;
+    return;
+  }
+
+  if (normalizedLine === AFTER_IMAGE_TEXT_MARKER) {
+    const question = state.currentQuestion;
+    if (
+      question?.isUnscored === true &&
+      question.hasImage &&
+      question.image &&
+      question.options.length === 0 &&
+      !question.afterImageText
+    ) {
+      state.pendingAfterImageTextQuestion = question;
+    } else {
+      addWarning(state, "invalid_post_image_text_marker", question);
+    }
+    state.lastOptionTarget = null;
     return;
   }
 
@@ -489,7 +549,7 @@ function processTextLine(line, state) {
 }
 
 function processTextBlock(rawText, state) {
-  const markerPattern = /(\[\[JUSTIFICACION(?:_ITEM_\d+_OPCION_\d+)?\]\]|\[\[FIN_JUSTIFICACION\]\])/gi;
+  const markerPattern = /(\[\[JUSTIFICACION(?:_ITEM_\d+_OPCION_\d+)?\]\]|\[\[FIN_JUSTIFICACION\]\]|\[\[SIN_PUNTUAR\]\]|\[\[TEXTO_POST_IMAGEN\]\])/gi;
   const parts = rawText
     .replace(/\r/g, "\n")
     .replace(/\u00A0/g, " ")
@@ -498,7 +558,7 @@ function processTextBlock(rawText, state) {
   parts.forEach((part) => {
     if (!part.trim()) return;
 
-    if (/^\[\[(?:JUSTIFICACION(?:_ITEM_\d+_OPCION_\d+)?|FIN_JUSTIFICACION)\]\]$/i.test(part.trim())) {
+    if (/^\[\[(?:JUSTIFICACION(?:_ITEM_\d+_OPCION_\d+)?|FIN_JUSTIFICACION|SIN_PUNTUAR|TEXTO_POST_IMAGEN)\]\]$/i.test(part.trim())) {
       processTextLine(part.trim(), state);
       return;
     }
@@ -522,6 +582,7 @@ function parseHtmlToQuestions(html) {
     warnings: [],
     currentQuestion: null,
     pendingImageQuestion: null,
+    pendingAfterImageTextQuestion: null,
     lastOptionTarget: null,
     justificationBlock: null,
     nextQuestionOrdinal: 1
@@ -565,6 +626,15 @@ function parseHtmlToQuestions(html) {
 function isValidQuestion(question) {
   if (!question.question) return false;
 
+  if (question.isUnscored === true) {
+    return (
+      question.type === "multiple_choice" &&
+      question.options.length > 0 &&
+      question.options.every((option) => option.isCorrect === false) &&
+      question.answers.length === 0
+    );
+  }
+
   if (question.type === "multi_dropdown") {
     return question.items.length > 0;
   }
@@ -598,6 +668,13 @@ function formatMultiDropdownItem(item, options = item.options) {
     options: options.map(omitEmptyJustification),
     answer: answerOption?.text || item.answer,
     answerOptionId: answerOption?.id || item.answerOptionId
+  };
+}
+
+function formatPracticeMetadata(question) {
+  return {
+    ...(question.isUnscored === true ? { isUnscored: true } : {}),
+    ...(question.afterImageText ? { afterImageText: question.afterImageText } : {})
   };
 }
 
@@ -642,6 +719,7 @@ function formatQuestionsWithoutShuffle(questions) {
     return {
       type: question.type,
       question: question.question,
+      ...formatPracticeMetadata(question),
       hasImage: question.hasImage || Boolean(question.image),
       image: question.image || null,
       options,
@@ -693,6 +771,7 @@ function randomizeQuestionOptions(question) {
   return {
     type: question.type,
     question: question.question,
+    ...formatPracticeMetadata(question),
     hasImage: question.hasImage || Boolean(question.image),
     image: question.image || null,
     options,

@@ -17,6 +17,13 @@ const assetDirectory = path.join(contentDirectory, "assets");
 const outputFile = path.join(contentDirectory, "Redes_Parcial_3_2026_JoyaCards_Auditado.docx");
 const pendingOutputFile = path.join(contentDirectory, "Pendientes_Redes_Parcial_3_2026_Practica_Sin_Puntuar.docx");
 const letter = "abcdefghijklmnopqrstuvwxyz";
+const netstatPrompt = "La ejecución de un comando nos permite ver los puertos de los servicios que funcionan en el equipo, ¿Qué servicios puede asegurar que están corriendo en el servidor?";
+const netstatOptions = ["SSH", "FTP", "DNS", "HTTPS", "DHCP", "HTTP", "Telnet"];
+const netstatLabels = [
+  "[FOTO | NETSTAT ORIGINAL | SIN PUNTUAR]",
+  "[RECUERDO | VARIANTE NETSTAT | SIN PUNTUAR]"
+];
+const variantAnnotation = "VARIANTE DEL PARCIAL (RECUERDO): Imaginá que, en una de las filas de la consola, el campo ESTADO aparece vacío en lugar de mostrar LISTEN. El resto de la captura permanece igual. Teniendo en cuenta ese cambio, respondé la misma consigna original.";
 
 async function loadCards(fileName) {
   const fileText = await readFile(path.join(contentDirectory, fileName), "utf8");
@@ -144,6 +151,33 @@ async function main() {
     throw new Error("Tarjetas inválidas: " + invalidCards.map(({ index }) => index).join(", "));
   }
 
+  if (cards.length !== 28) {
+    throw new Error(`Se esperaban 28 tarjetas puntuables y se encontraron ${cards.length}`);
+  }
+
+  if (pendingCards.length !== 2) {
+    throw new Error(`Se esperaban 2 ejercicios netstat sin puntuar y se encontraron ${pendingCards.length}`);
+  }
+
+  const netstatImage = pendingCards[0]?.image;
+  const invalidPendingCards = pendingCards.filter((card, index) =>
+    card.label !== netstatLabels[index] ||
+    card.prompt !== netstatPrompt ||
+    card.image !== netstatImage ||
+    !card.image ||
+    !Array.isArray(card.options) ||
+    card.options.length !== netstatOptions.length ||
+    card.options.some((option, optionIndex) => option !== netstatOptions[optionIndex]) ||
+    "answers" in card ||
+    card.options.some((option) => typeof option !== "string") ||
+    (index === 0 && Boolean(card.afterImageText)) ||
+    (index === 1 && card.afterImageText !== variantAnnotation)
+  );
+
+  if (invalidPendingCards.length > 0) {
+    throw new Error("Las tarjetas netstat sin puntuar no coinciden con la especificación revisada");
+  }
+
   const children = [];
   for (let index = 0; index < cards.length; index += 1) {
     const card = cards[index];
@@ -177,6 +211,47 @@ async function main() {
         children.push(paragraph(justification(card), { color: "46505C", size: 18, after: 55, keepNext: true }));
         children.push(paragraph("[[FIN_JUSTIFICACION]]", { color: "737D8A", size: 16, after: 75, keepNext: true }));
       }
+    });
+
+    children.push(new Paragraph({
+      spacing: { after: 130 },
+      children: [new TextRun("")]
+    }));
+  }
+
+  for (let index = 0; index < pendingCards.length; index += 1) {
+    const card = pendingCards[index];
+    const questionNumber = cards.length + index + 1;
+    children.push(paragraph(`@@@ ${questionNumber}. ${card.label} ${card.prompt}`, {
+      bold: true,
+      size: 22,
+      after: 90,
+      keepNext: true
+    }));
+    children.push(paragraph("[[SIN_PUNTUAR]]", {
+      color: "606B79",
+      size: 16,
+      after: 20,
+      keepNext: true
+    }));
+    children.push(paragraph("[[IMAGEN]]", { color: "606B79", size: 16, after: 20, keepNext: true }));
+    children.push(await imageParagraph(card.image));
+
+    if (card.afterImageText) {
+      children.push(paragraph("[[TEXTO_POST_IMAGEN]]", {
+        color: "606B79",
+        size: 16,
+        after: 20,
+        keepNext: true
+      }));
+      children.push(variantAnnotationParagraph(card.afterImageText));
+    }
+
+    card.options.forEach((option, optionIndex) => {
+      children.push(paragraph(`${letter[optionIndex]}) ${option}`, {
+        after: 55,
+        keepNext: optionIndex < card.options.length - 1
+      }));
     });
 
     children.push(new Paragraph({
@@ -259,8 +334,10 @@ async function main() {
 
   await writeFile(pendingOutputFile, await Packer.toBuffer(pendingDocument));
   console.log("Generado: " + outputFile);
+  console.log("Tarjetas en el cuestionario principal: " + (cards.length + pendingCards.length));
   console.log("Tarjetas puntuables: " + cards.length);
-  console.log("Imágenes en el cuestionario puntuable: " + cards.filter((card) => card.image).length);
+  console.log("Tarjetas de práctica sin puntuar: " + pendingCards.length);
+  console.log("Imágenes en el cuestionario principal: " + (cards.filter((card) => card.image).length + pendingCards.filter((card) => card.image).length));
   console.log("Pendientes generados en companion sin puntuar: " + pendingCards.length);
   console.log("Generado: " + pendingOutputFile);
 }
