@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="360" viewBox="0 0 1440 360" role="img" aria-labelledby="title desc">
+  <title id="title">Reconstrucción visual de la consigna nslookup de Instagram</title>
+  <desc id="desc">La consigna original con un campo de respuesta vacío.</desc>
+  <rect width="1440" height="360" rx="16" fill="#e2eee9"/>
+  <g font-family="Arial, sans-serif" font-size="26" fill="#20252d">
+    <text x="28" y="46">Coloque el comando completo que utilizaría para averiguar información</text>
+    <text x="28" y="84">sobre el servidor de resolución de nombres del dominio instagram.com</text>
+    <text x="28" y="122">en Windows (coloque el comando COMPLETO con las opciones del mismo en</text>
+    <text x="28" y="160">caso de corresponder, no agregue texto ni espacios de más)</text>
+    <text x="28" y="249">Respuesta:</text>
+  </g>
+  <rect x="190" y="208" width="1200" height="64" rx="13" fill="#fffdf7" stroke="#e6c57e" stroke-width="3"/>
+</svg>

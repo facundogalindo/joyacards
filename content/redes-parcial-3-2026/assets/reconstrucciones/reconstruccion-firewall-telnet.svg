@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1300" viewBox="0 0 1600 1300" role="img" aria-labelledby="title desc">
+  <title id="title">Reconstrucción visual de las reglas del cortafuegos para Telnet</title>
+  <desc id="desc">Se reproducen la consigna, las cinco reglas en su orden, sus direcciones, protocolos, zonas, estados de registro, controles visibles, política y alternativas de respuesta.</desc>
+  <rect width="1600" height="1300" fill="#e8efec"/>
+  <g font-family="Arial, sans-serif" fill="#20252d">
+    <text x="38" y="48" font-size="27">Me encuentro ubicado en el equipo con IP 192.168.50.102/24 (VERDE) y necesito realizar Telnet al equipo</text>
+    <text x="38" y="84" font-size="27">172.16.170.155/24 (ROJO) pasando por el firewall que tiene esta configuración adaptada</text>
+  </g>
+  <rect x="35" y="105" width="1530" height="520" rx="12" fill="#f8f6f0" stroke="#d6d0c4" stroke-width="3"/>
+  <text x="58" y="151" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#20252d">Reglas del Cortafuegos</text>
+  <rect x="50" y="171" width="1500" height="48" fill="#243447"/>
+  <g font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#f8fafc">
+    <text x="70" y="202">#</text><text x="112" y="202">Protocolo</text><text x="332" y="202">Origen</text><text x="650" y="202">Registro</text><text x="835" y="202">Destino</text><text x="1270" y="202">Acción</text>
+  </g>
+  <rect x="50" y="219" width="1500" height="100" fill="#f2f0e9"/>
+  <rect x="50" y="319" width="1500" height="98" fill="#d7d4cd"/>
+  <rect x="50" y="417" width="1500" height="68" fill="#f2f0e9"/>
+  <rect x="50" y="485" width="1500" height="68" fill="#d7d4cd"/>
+  <rect x="50" y="553" width="1500" height="68" fill="#f2f0e9"/>
+  <g fill="#7b233b">
+    <rect x="50" y="219" width="42" height="100"/><rect x="50" y="553" width="42" height="68"/>
+  </g>
+  <rect x="50" y="319" width="42" height="98" fill="#34475a"/>
+  <rect x="50" y="417" width="42" height="68" fill="#7b233b"/>
+  <rect x="50" y="485" width="42" height="68" fill="#23834c"/>
+  <g font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#fff" text-anchor="middle">
+    <text x="71" y="275">1</text><text x="71" y="377">2</text><text x="71" y="460">3</text><text x="71" y="528">4</text><text x="71" y="596">5</text>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="22" fill="#20252d">
+    <text x="111" y="264">TCP</text>
+    <text x="332" y="264">Cualquiera</text>
+    <text x="111" y="362">TCP</text>
+    <text x="111" y="388" font-size="19" font-style="italic">Rechazamos conexiones al servidor</text>
+    <text x="111" y="460">ICMP</text>
+    <text x="111" y="528">ICMP</text>
+    <text x="111" y="596">TCP</text>
+  </g>
+  <rect x="280" y="329" width="330" height="49" rx="5" fill="#0b6540"/>
+  <rect x="280" y="417" width="330" height="204" fill="#0b6540"/>
+  <g font-family="Arial, sans-serif" font-size="21" fill="#f8fafc" text-anchor="middle">
+    <text x="445" y="360">192.168.50.102</text><text x="445" y="460">192.168.50.102</text><text x="445" y="516">Green</text><text x="445" y="588">Green</text>
+  </g>
+  <rect x="746" y="230" width="408" height="48" rx="5" fill="#861b3a"/>
+  <rect x="746" y="553" width="408" height="68" fill="#861b3a"/>
+  <g font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#f8fafc" text-anchor="middle">
+    <text x="950" y="261">RED: SMTP</text><text x="950" y="596">RED: Telnet</text>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="21" fill="#20252d">
+    <text x="772" y="362">172.16.170.33: 443</text>
+    <text x="772" y="460">172.16.170.33</text>
+    <text x="772" y="528">172.16.170.33</text>
+  </g>
+  <text x="112" y="304" font-family="Arial, sans-serif" font-size="19" font-weight="700" font-style="italic" fill="#20252d">Block port 25 (TCP) for outgoing connections to the Internet</text>
+  <g stroke="#313a44" fill="#fffdf7" stroke-width="3">
+    <rect x="664" y="239" width="23" height="23"/><rect x="664" y="347" width="23" height="23"/><rect x="664" y="439" width="23" height="23"/><rect x="664" y="507" width="23" height="23"/><rect x="664" y="575" width="23" height="23"/>
+  </g>
+  <g stroke="#222b34" stroke-width="3" fill="#fffdf7">
+    <rect x="1177" y="239" width="24" height="24"/><rect x="1177" y="339" width="24" height="24"/><rect x="1177" y="439" width="24" height="24"/><rect x="1177" y="507" width="24" height="24"/><rect x="1177" y="575" width="24" height="24"/>
+  </g>
+  <g stroke="#20252d" stroke-width="3" fill="none">
+    <path d="M1182 251l6 6 11-13"/><path d="M1182 351l6 6 11-13"/><path d="M1182 451l6 6 11-13"/><path d="M1182 519l6 6 11-13"/><path d="M1182 587l6 6 11-13"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#a45d2c" text-anchor="middle">
+    <text x="1232" y="260">✎</text><text x="1232" y="360">✎</text><text x="1232" y="460">✎</text><text x="1232" y="528">✎</text><text x="1232" y="596">✎</text>
+  </g>
+  <g fill="none" stroke="#254a7c" stroke-width="3">
+    <rect x="1263" y="244" width="15" height="15"/><rect x="1269" y="250" width="15" height="15"/>
+    <rect x="1263" y="344" width="15" height="15"/><rect x="1269" y="350" width="15" height="15"/>
+    <rect x="1263" y="444" width="15" height="15"/><rect x="1269" y="450" width="15" height="15"/>
+    <rect x="1263" y="512" width="15" height="15"/><rect x="1269" y="518" width="15" height="15"/>
+    <rect x="1263" y="580" width="15" height="15"/><rect x="1269" y="586" width="15" height="15"/>
+  </g>
+  <g fill="none" stroke="#26323d" stroke-width="3">
+    <path d="M1309 244h22l-2 25h-18zM1306 239h28M1315 235h10"/>
+    <path d="M1309 344h22l-2 25h-18zM1306 339h28M1315 335h10"/>
+    <path d="M1309 444h22l-2 25h-18zM1306 439h28M1315 435h10"/>
+    <path d="M1309 512h22l-2 25h-18zM1306 507h28M1315 503h10"/>
+    <path d="M1309 580h22l-2 25h-18zM1306 575h28M1315 571h10"/>
+  </g>
+  <g fill="none" stroke="#23834c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1383 244l15 16 15-16"/>
+    <path d="M1383 354l15-12 15 12M1423 354l15 12 15-12"/>
+    <path d="M1383 454l15-12 15 12M1423 454l15 12 15-12"/>
+    <path d="M1383 522l15-12 15 12M1423 522l15 12 15-12"/>
+    <path d="M1383 596l15-16 15 16"/>
+  </g>
+  <rect x="50" y="650" width="460" height="60" fill="#167348"/>
+  <rect x="510" y="650" width="1040" height="60" fill="#7b1835"/>
+  <rect x="50" y="710" width="1500" height="48" fill="#167348"/>
+  <g font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#ffffff">
+    <text x="244" y="689">Green &gt;</text>
+    <text x="925" y="689">Internet (Permitido)</text>
+    <text x="695" y="741">Política: Permitido</text>
+  </g>
+  <text x="40" y="815" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#20252d">¿Qué sucederá?</text>
+  <g font-family="Arial, sans-serif" font-size="23" fill="#20252d">
+    <circle cx="53" cy="864" r="8" fill="#fff" stroke="#66717d" stroke-width="2"/><text x="80" y="872">a. La conexión será exitosa por la política implementada en el firewall.</text>
+    <circle cx="53" cy="930" r="8" fill="#fff" stroke="#66717d" stroke-width="2"/><text x="80" y="923">b. La conexión será exitosa ya que hay una regla que permite el paso del protocolo ICMP de toda</text><text x="111" y="953">la red VERDE a la IP destino.</text>
+    <circle cx="53" cy="1000" r="8" fill="#fff" stroke="#66717d" stroke-width="2"/><text x="80" y="1008">c. La conexión será bloqueada debido a la regla 5.</text>
+    <circle cx="53" cy="1060" r="8" fill="#fff" stroke="#66717d" stroke-width="2"/><text x="80" y="1068">d. La conexión será bloqueada por la política implementada en el firewall.</text>
+    <circle cx="53" cy="1120" r="8" fill="#fff" stroke="#66717d" stroke-width="2"/><text x="80" y="1128">e. La conexión será exitosa debido a la regla 5.</text>
+  </g>
+</svg>

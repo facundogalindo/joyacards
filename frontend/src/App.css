@@ -1814,3 +1814,355 @@ input {
     margin: 0;
   }
 }
+
+/* Visor universal de imágenes de preguntas */
+.question-image-viewer {
+  width: 100%;
+  max-width: 780px;
+  margin: 18px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.question-image-viewer .question-image-open-button {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.question-image-viewer .question-image-open-button:hover {
+  background: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+.question-image-viewer .question-image-open-button:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 4px;
+}
+
+.question-image-viewer .question-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(100%, 760px);
+  max-height: 400px;
+  margin: 0 auto;
+  object-fit: contain;
+  cursor: zoom-in;
+}
+
+.question-image-caption {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.question-image-actions {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.question-image-actions button {
+  width: auto;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #1e293b;
+  font-size: 13px;
+  line-height: 1.3;
+  box-shadow: none;
+  transform: none;
+}
+
+.question-image-actions button:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #1d4ed8;
+  box-shadow: none;
+  transform: none;
+}
+
+.question-image-actions .image-fullscreen-button {
+  border-color: #1d4ed8;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+}
+
+.question-image-actions .image-fullscreen-button:hover {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.image-lightbox-backdrop {
+  position: fixed;
+  z-index: 3000;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  padding: 10px;
+  overflow: hidden;
+  background: rgba(3, 7, 18, 0.96);
+  color: #f8fafc;
+  color-scheme: dark;
+}
+
+.image-lightbox-dialog {
+  width: 100%;
+  max-width: 1800px;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 10px;
+  outline: none;
+}
+
+.image-lightbox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.image-lightbox-heading {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px 0;
+}
+
+.image-lightbox-heading strong {
+  font-size: 16px;
+}
+
+.image-lightbox-heading span {
+  max-width: 68ch;
+  color: #cbd5e1;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.image-lightbox-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.image-lightbox-controls button,
+.image-lightbox-variants button {
+  width: auto;
+  min-height: 40px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid #475569;
+  border-radius: 9px;
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 13px;
+  line-height: 1.25;
+  box-shadow: none;
+  transform: none;
+}
+
+.image-lightbox-controls button:hover,
+.image-lightbox-variants button:hover {
+  border-color: #94a3b8;
+  background: #334155;
+  color: #fff;
+  box-shadow: none;
+  transform: none;
+}
+
+.image-lightbox-controls button:disabled {
+  border-color: #334155;
+  background: #111827;
+  color: #64748b;
+}
+
+.image-lightbox-controls output {
+  min-width: 48px;
+  color: #e2e8f0;
+  font-size: 13px;
+  text-align: center;
+}
+
+.image-lightbox-controls .image-lightbox-close {
+  min-width: 42px;
+  padding: 4px 10px;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.image-lightbox-variants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.image-lightbox-variants button.active {
+  border-color: #93c5fd;
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.image-lightbox-stage {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  background: #020617;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.image-lightbox-stage.is-dragging {
+  cursor: grabbing;
+}
+
+.image-lightbox-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transform-origin: center center;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.image-lightbox-caption {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.app-shell[data-theme="dark"] .question-image-caption {
+  color: #cbd5e1;
+}
+
+.app-shell[data-theme="dark"] .question-image-actions .image-variant-button {
+  border-color: #475569;
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+.app-shell[data-theme="dark"] .question-image-actions .image-variant-button:hover {
+  border-color: #60a5fa;
+  background: #1e3a8a;
+  color: #eff6ff;
+}
+
+@media (max-width: 680px) {
+  .question-image-viewer {
+    max-width: 100%;
+  }
+
+  .question-image-viewer .question-image {
+    max-height: 320px;
+  }
+
+  .question-image-actions {
+    gap: 6px;
+  }
+
+  .question-image-actions button {
+    flex: 1 1 145px;
+    min-height: 42px;
+  }
+
+  .image-lightbox-backdrop {
+    padding: 5px;
+  }
+
+  .image-lightbox-dialog {
+    gap: 7px;
+    padding: 5px;
+  }
+
+  .image-lightbox-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 7px;
+  }
+
+  .image-lightbox-heading {
+    padding: 0;
+  }
+
+  .image-lightbox-heading strong {
+    font-size: 14px;
+  }
+
+  .image-lightbox-heading span {
+    font-size: 12px;
+  }
+
+  .image-lightbox-controls {
+    justify-content: stretch;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .image-lightbox-controls button {
+    width: 100%;
+    min-height: 42px;
+    padding: 7px 5px;
+    font-size: 12px;
+  }
+
+  .image-lightbox-controls .image-lightbox-close {
+    min-width: 0;
+  }
+
+  .image-lightbox-variants {
+    gap: 5px;
+  }
+
+  .image-lightbox-variants button {
+    flex: 1 1 145px;
+    min-height: 40px;
+    padding: 7px;
+    font-size: 12px;
+  }
+
+  .image-lightbox-caption {
+    font-size: 11px;
+  }
+}

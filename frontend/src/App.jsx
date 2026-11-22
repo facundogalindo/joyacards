@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import QuestionBuilder from "./QuestionBuilder";
+import QuestionImageViewer from "./components/QuestionImageViewer.jsx";
 import { uploadWordToJson } from "./services/wordApi";
 import {
   areAnswersCorrect,
@@ -633,10 +634,11 @@ function App() {
           <h2>{currentQuestion.question}</h2>
 
           {currentQuestion.image && (
-            <img
-              src={currentQuestion.image}
-              alt="Imagen de la pregunta"
-              className="question-image"
+            <QuestionImageViewer
+              key={currentIndex}
+              questionKey={currentIndex}
+              image={currentQuestion.image}
+              altText="Imagen de la pregunta"
             />
           )}
 

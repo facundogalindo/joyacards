@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "questionnaireBaseline": {
+    "commit": "4b5553f",
+    "questions": 30,
+    "scoreableQuestions": 30,
+    "unscoredQuestions": 0,
+    "imageAppearances": 9,
+    "uniqueEmbeddedImages": 5,
+    "justifications": 32,
+    "warnings": 0,
+    "semanticSha256": "9e9efc0a2741bdc58fcb04bb34a80f3aa9128706d1ccf72c5e9ac071968eeb3e"
+  },
+  "entries": [
+    {
+      "id": "firewall-telnet",
+      "sourceExercise": "Fotografía completa #11; recorte ampliado #22.",
+      "questionReference": "Pregunta de Telnet a través del firewall; aparece una vez en el cuestionario.",
+      "embeddedImageFile": "assets/foto-11-firewall-telnet-origen-22.jfif",
+      "embeddedImageSha256": "7fdd67cc1565ec43d1a53c5c8397f0ddc69742ae16ff7193be375efc8aae9402",
+      "originalPhotoFile": "assets/originales-completas/foto-11-firewall-completa-original.jpg",
+      "originalPhotoSha256": "81bcd500bed9471a27a420ae9a64d174cb6de82e88512ee56c20eb4c31823bfb",
+      "enhancedImageFile": "assets/mejoradas/foto-11-firewall-telnet-origen-22-mejorada.jpg",
+      "enhancedImageSha256": "a8fc7565c61d19b1318f53533cfa2c7ce7cb9d374e2cc3e825dd7079d6cc1352",
+      "reconstructionFile": "assets/reconstrucciones/reconstruccion-firewall-telnet.svg",
+      "reconstructionStatus": "APROBADA",
+      "comparisonFile": "assets/comparaciones/firewall-original-vs-reconstruccion.jpg",
+      "verifiedElements": [
+        "Consigna y cinco alternativas en el orden visible.",
+        "Cinco filas en el orden 1 a 5.",
+        "Protocolos TCP, TCP, ICMP, ICMP y TCP.",
+        "Orígenes Cualquiera, 192.168.50.102, 192.168.50.102, Green y Green.",
+        "Destinos RED: SMTP, 172.16.170.33: 443, 172.16.170.33, 172.16.170.33 y RED: Telnet.",
+        "Descripción de las filas 1 y 2, casillas de registro vacías y casillas de regla habilitada marcadas.",
+        "Zonas Green e Internet, política Permitido y colores verde/rojo.",
+        "Diferencia visible entre la IP de destino de la consigna (.155) y las direcciones .33 de la tabla; ambas se conservaron."
+      ],
+      "ambiguousElements": [
+        "La geometría exacta de los iconos pequeños de acciones de la interfaz es cosmética y se redibujó; no se interpretó como una regla del firewall."
+      ],
+      "cosmeticDifferences": [
+        "Se quitaron el muaré, la inclinación, el borde de pantalla y el entorno físico.",
+        "Se reorganizó el espacio y se normalizó la tipografía para hacer legibles las mismas filas y alternativas."
+      ],
+      "notes": "La clave C ya existente no se cambió ni se utilizó para reconstruir la tabla.",
+      "enhancementComparisonFile": "assets/comparaciones/firewall-original-vs-mejorada.jpg"
+    },
+    {
+      "id": "tftp",
+      "sourceExercise": "Fotografía completa #2; recorte ampliado #31.",
+      "questionReference": "Pregunta TFTP; aparece una vez en el cuestionario.",
+      "embeddedImageFile": "assets/foto-02-tftp-recorte-31.jfif",
+      "embeddedImageSha256": "216203ade441e208e158cae79ddb1d3b45c248bceddbfec897cf31751786a685",
+      "originalPhotoFile": "assets/originales-completas/foto-02-tftp-completa-original.jpg",
+      "originalPhotoSha256": "b0d8b3934de99affbabac34a2003136bc039c74b51f5ce122b68c68f10d88c73",
+      "enhancedImageFile": "assets/mejoradas/foto-02-tftp-recorte-31-mejorada.jpg",
+      "enhancedImageSha256": "c079357b5225ed778a9506bf1e38a841ab66e3899faf6080ff9b1dedd38cf260",
+      "reconstructionFile": "assets/reconstrucciones/reconstruccion-tftp.svg",
+      "reconstructionStatus": "APROBADA",
+      "comparisonFile": "assets/comparaciones/tftp-original-vs-reconstruccion.jpg",
+      "verifiedElements": [
+        "Consigna y cinco alternativas con sus letras, textos y orden.",
+        "Se conservó el selector azul visible en la alternativa d y el enlace Quitar mi elección."
+      ],
+      "ambiguousElements": [
+        "La selección visible de d es una selección en pantalla, no evidencia de respuesta correcta; se mantuvo como detalle fotográfico."
+      ],
+      "cosmeticDifferences": [
+        "Se quitaron el muaré, el encuadre de pantalla y el entorno físico.",
+        "Se ajustaron tipografía, contraste y espaciado sin modificar texto ni selección."
+      ],
+      "notes": "La clave B existente se conserva; la selección d de la foto no se usó para puntuar.",
+      "enhancementComparisonFile": "assets/comparaciones/tftp-original-vs-mejorada.jpg"
+    },
+    {
+      "id": "nslookup-instagram",
+      "sourceExercise": "Fotografía completa #3; recorte ampliado #30.",
+      "questionReference": "Pregunta de comando nslookup para instagram.com; aparece una vez.",
+      "embeddedImageFile": "assets/foto-14-nslookup-instagram-original-abierta-30.jfif",
+      "embeddedImageSha256": "c34b2a2bd6cf7be44b8b28030adc1ca0d761639ce889d987654cf427c8b1cc61",
+      "originalPhotoFile": "assets/originales-completas/foto-14-nslookup-completa-original.jpg",
+      "originalPhotoSha256": "32fb02042faee32fd3e860daf8d47da92342c37c164679b567562c615f4cd989",
+      "enhancedImageFile": null,
+      "enhancedImageSha256": null,
+      "reconstructionFile": "assets/reconstrucciones/reconstruccion-nslookup-instagram.svg",
+      "reconstructionStatus": "APROBADA",
+      "comparisonFile": "assets/comparaciones/nslookup-original-vs-reconstruccion.jpg",
+      "verifiedElements": [
+        "Consigna completa con el dominio instagram.com y la indicación de no agregar texto ni espacios.",
+        "Etiqueta Respuesta y campo vacío; no se añadió una respuesta."
+      ],
+      "ambiguousElements": [],
+      "cosmeticDifferences": [
+        "Se quitaron el muaré, la inclinación y el entorno de pantalla.",
+        "Se ajustaron tipografía y espaciado; el campo de respuesta sigue vacío."
+      ],
+      "notes": "Las opciones y la clave adaptadas que ya existen en JoyaCards no se modificaron."
+    },
+    {
+      "id": "show-ip-route",
+      "sourceExercise": "Fotografía completa #12; recorte ampliado #21.",
+      "questionReference": "Imagen compartida por las cuatro subpreguntas de show ip route.",
+      "embeddedImageFile": "assets/foto-12-show-ip-route-recorte-21.jfif",
+      "embeddedImageSha256": "1bc4fe2ff519645b82704e3973dceaaabb8ab2bfeb410c6c7f53b4cc1f17eacb",
+      "originalPhotoFile": "assets/originales-completas/foto-12-show-ip-route-completa-original.jpg",
+      "originalPhotoSha256": "d8c55aa434289a9981322aa332ba354322b29078b2636aecb1d1fe03222cae2a",
+      "enhancedImageFile": null,
+      "enhancedImageSha256": null,
+      "reconstructionFile": null,
+      "reconstructionStatus": "NO RECONSTRUIBLE",
+      "comparisonFile": null,
+      "verifiedElements": [
+        "La foto original y el recorte de routing se preservan; el Word reutiliza el mismo recorte en cuatro preguntas."
+      ],
+      "ambiguousElements": [
+        "Varios rótulos de IP/interfaz de la topología y parte de la tabla no se pueden transcribir con certeza desde las copias disponibles.",
+        "El muaré y el desenfoque impiden verificar todas las posiciones y conexiones de la topología."
+      ],
+      "cosmeticDifferences": [],
+      "notes": "No se inventaron etiquetas ni rutas. El visor ofrece fotografía completa, recorte original y zoom."
+    },
+    {
+      "id": "netstat",
+      "sourceExercise": "Fotografía completa #8; recorte ampliado #25.",
+      "questionReference": "Preguntas puntuables 29 y 30; comparten la captura.",
+      "embeddedImageFile": "assets/pendiente-foto-08-netstat-25.jfif",
+      "embeddedImageSha256": "2bf9ac556f3fddc703b6d2c86306b512d26e57f1a19165ef4df4ef5e44ef6198",
+      "originalPhotoFile": "assets/originales-completas/foto-08-netstat-completa-original.jpg",
+      "originalPhotoSha256": "55d23c4fc960260c9d447f9beb2896453995492b5c2c43d3f14915ffe137093b",
+      "enhancedImageFile": null,
+      "enhancedImageSha256": null,
+      "reconstructionFile": null,
+      "reconstructionStatus": "NO RECONSTRUIBLE",
+      "comparisonFile": null,
+      "verifiedElements": [
+        "Consigna, encabezados generales de consola y siete alternativas existentes.",
+        "La foto completa y el recorte muestran el mismo ejercicio."
+      ],
+      "ambiguousElements": [
+        "No se pueden verificar con seguridad todos los protocolos, direcciones, puertos y estados de las filas, incluido el contenido exacto de la última fila."
+      ],
+      "cosmeticDifferences": [],
+      "notes": "No se completaron datos por intuición. Se mantienen intactas las claves de práctica ya auditadas; la variante sigue identificada como variante."
+    }
+  ]
+}
