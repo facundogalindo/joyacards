@@ -107,7 +107,7 @@
     {
       "id": "show-ip-route",
       "sourceExercise": "Fotografía completa #12; recorte ampliado #21.",
-      "questionReference": "Preguntas 14?17; las cuatro apariciones comparten el mismo recorte y la misma reconstrucci?n parcial.",
+      "questionReference": "Preguntas 14–17; las cuatro apariciones comparten el mismo recorte y la misma reconstrucción parcial.",
       "embeddedImageFile": "assets/foto-12-show-ip-route-recorte-21.jfif",
       "embeddedImageSha256": "1bc4fe2ff519645b82704e3973dceaaabb8ab2bfeb410c6c7f53b4cc1f17eacb",
       "originalPhotoFile": "assets/originales-completas/foto-12-show-ip-route-completa-original.jpg",
@@ -119,30 +119,31 @@
       "comparisonFile": "assets/comparaciones/show-ip-route-original-vs-reconstruccion-parcial.jpg",
       "verifiedElements": [
         "La foto completa #12 y el recorte #21 corresponden al mismo ejercicio; ambos se conservaron sin cambios.",
-        "La geometr?a visible muestra tres routers en tri?ngulo: dos arriba y uno debajo; los cuatro segmentos LAN mantienen su ubicaci?n relativa.",
-        "Se conservaron los equipos y enlaces visibles de la LAN izquierda (tres equipos finales y un switch), la LAN superior derecha (dos equipos y un switch), la LAN inferior izquierda (un equipo y un switch) y la LAN inferior derecha (un punto de acceso y dos port?tiles). Los nombres borrosos se dejaron sin transcribir.",
-        "Las redes visibles y corroboradas con la tabla son 192.168.10.0/24, 192.168.20.0/24, 192.168.30.0/24, 192.168.40.0/24, 192.168.50.0/24, 192.168.60.0/24 y 192.168.70.0/24.",
-        "La consola muestra Gateway of last resort is not set y las rutas/copias C y L transcritas en el mismo orden fotogr?fico, con m?tricas [120/1], pr?ximos saltos, tiempos e interfaces legibles.",
-        "Router2 se identifica por referencia cruzada con la subpregunta asociada; no se tom? la respuesta correcta como evidencia visual independiente."
+        "La geometría visible muestra tres routers en triángulo: dos arriba y uno debajo; los cuatro segmentos LAN mantienen su ubicación relativa.",
+        "Se conservaron los equipos y enlaces visibles de la LAN izquierda (tres equipos finales y un switch), la LAN superior derecha (dos equipos y un switch), la LAN inferior izquierda (un equipo y un switch) y la LAN inferior derecha (un punto de acceso y dos portátiles). Los nombres borrosos se dejaron sin transcribir.",
+        "Las siete redes visibles son 192.168.10.0/24, 192.168.20.0/24, 192.168.30.0/24, 192.168.40.0/24, 192.168.50.0/24, 192.168.60.0/24 y 192.168.70.0/24.",
+        "Cotejo directo de la tabla fotográfica: R 192.168.10.0/24 [120/1] via 192.168.20.1, 00:00:20, Serial0/1/0; R 192.168.30.0/24 [120/1] via 192.168.70.2, 00:00:11, Serial0/1/1 y via 192.168.20.1, 00:00:20, Serial0/1/0; R 192.168.50.0/24 [120/1] via 192.168.70.2, 00:00:11, Serial0/1/1.",
+        "C/L cotejadas visualmente: 192.168.20.0/24 C por Serial0/1/0 y 192.168.20.2/32 L; 192.168.40.0/24 C por GigabitEthernet0/0/0 y 192.168.40.1/32 L; 192.168.60.0/24 C por GigabitEthernet0/0/1 y 192.168.60.1/32 L; 192.168.70.0/24 C por Serial0/1/1 y 192.168.70.1/32 L.",
+        "La consola inicia con Gateway of last resort is not set. La dirección local final es 192.168.70.1/32; 192.168.70.2 aparece como próximo salto de rutas R, no como dirección local."
       ],
       "ambiguousElements": [
         "Los nombres de los otros dos routers, nombres de equipos y modelos de switches no se leen con seguridad.",
-        "Las interfaces junto a los cables del diagrama no son legibles, aunque las interfaces de la tabla s? se distinguen.",
-        "La foto contiene trazos/flechas rojas sobre los enlaces entre routers; el sentido de esas marcas no se pudo confirmar y por eso la reconstrucci?n conserva el color sin puntas.",
-        "Los textos de r?tulo peque?os junto a algunos dispositivos y la identificaci?n exacta de cada extremo siguen inciertos."
+        "Las interfaces junto a los cables del diagrama no son legibles, aunque las interfaces de la tabla sí se distinguen.",
+        "La foto contiene trazos/flechas rojas sobre los enlaces entre routers; el sentido de esas marcas no se pudo confirmar y por eso la reconstrucción conserva el color sin puntas.",
+        "Los textos de rótulo pequeños junto a algunos dispositivos y la identificación exacta de cada extremo siguen inciertos."
       ],
       "cosmeticDifferences": [
-        "Se eliminaron el muar?, la perspectiva de la pantalla y el entorno f?sico de la foto.",
-        "Se dibujaron los componentes vectoriales con los mismos grupos, posiciones relativas, redes y conexiones legibles; los r?tulos desconocidos se indican como tales."
+        "Se eliminaron el muaré, la perspectiva de la pantalla y el entorno físico de la foto.",
+        "Se dibujaron los componentes vectoriales con los mismos grupos, posiciones relativas, redes y conexiones legibles; los rótulos desconocidos se indican como tales."
       ],
-      "notes": "Reconstrucci?n parcial: la tabla transcribe datos legibles de la foto; el diagrama conserva el tri?ngulo y las cuatro LAN. No se inventaron nombres, interfaces de los cables ni direcci?n de las marcas rojas. No se encontr? redes_pregunta_5_reconstruccion_fiel.png en el repositorio ni en los adjuntos disponibles; esta versi?n se reconstruy? desde la foto #12 y el recorte #21.",
-      "reconstructionSha256": "5e1eb9552bd718761c0ed38c2a069a8df5b9a171fbe9bf435821c59e3aa833cb",
-      "comparisonSha256": "4d099d4e04c0a82e2240b3c6c291497c0fe3dd4acdef18b270d29fc0f877167b"
+      "notes": "Reconstrucción parcial: la tabla se cotejó con la fotografía, no con las respuestas del cuestionario. La dirección local 192.168.70.1/32 reemplaza la transcripción errónea .70.2. No se inventaron nombres, interfaces de los cables ni dirección de las marcas rojas. No se encontró redes_pregunta_5_reconstruccion_fiel.png en el repositorio ni en los adjuntos disponibles; esta versión se reconstruyó desde la foto #12 y el recorte #21.",
+      "reconstructionSha256": "33a6fb8e8e8a9d60bb51dc685f221315b7b26656ec8e7bbb6b8c99cfaad2c37e",
+      "comparisonSha256": "589aee546a8cadee1ecd003e841d627f8352d8e8ce77763b9c884800abc4490c"
     },
     {
       "id": "netstat",
       "sourceExercise": "Fotografía completa #8; recorte ampliado #25.",
-      "questionReference": "Preguntas puntuables 29 y 30; ambas conservan la misma foto y reconstrucci?n parcial. Solo la pregunta 30 incorpora la variante recordada.",
+      "questionReference": "Preguntas puntuables 29 y 30; ambas conservan la misma foto y reconstrucción parcial. Solo la pregunta 30 incorpora la variante recordada.",
       "embeddedImageFile": "assets/pendiente-foto-08-netstat-25.jfif",
       "embeddedImageSha256": "2bf9ac556f3fddc703b6d2c86306b512d26e57f1a19165ef4df4ef5e44ef6198",
       "originalPhotoFile": "assets/originales-completas/foto-08-netstat-completa-original.jpg",
@@ -154,27 +155,27 @@
       "comparisonFile": "assets/comparaciones/netstat-original-vs-reconstruccion-parcial.jpg",
       "verifiedElements": [
         "La foto completa #8 y el recorte #25 muestran el mismo ejercicio; ambos originales se preservan.",
-        "La captura contiene una consola oscura con una l?nea de encabezados tabulares y tres filas de datos visibles.",
+        "La captura contiene una consola oscura, una línea de encabezados tabulares y cuatro filas de datos debajo del encabezado.",
         "Las columnas visibles corresponden a Proto, Recv-Q, Send-Q, Local Address, Foreign Address y State; se conservan como estructura, sin completar valores de fila.",
-        "La reconstrucci?n mantiene tres filas y su orden, con una marca neutral en cada campo no verificable."
+        "La reconstrucción mantiene las cuatro filas en el orden visible y marca cada campo ilegible con una elipsis entre corchetes."
       ],
       "ambiguousElements": [
         "El texto del encabezado superior de la consola no se puede transcribir con confianza.",
-        "No se pueden confirmar los protocolos, valores de las colas, direcciones locales/remotas, puertos ni estados de ninguna de las tres filas.",
-        "La variante recordada de la pregunta 30 no constituye evidencia de lo que contiene la fotograf?a original."
+        "No se pueden confirmar los protocolos, valores de las colas, direcciones locales/remotas, puertos ni estados de ninguna de las cuatro filas.",
+        "La variante recordada de la pregunta 30 no constituye evidencia de lo que contiene la fotografía original."
       ],
       "cosmeticDifferences": [
-        "Se removieron el muar?, la perspectiva de pantalla y los colores del cuestionario para separar la consola.",
-        "Se representaron las seis columnas y tres filas con tipograf?a monoespaciada; los campos inciertos se marcaron con [?]."
+        "Se removieron el muaré, la perspectiva de pantalla y los colores del cuestionario para separar la consola.",
+        "Se representaron las seis columnas y cuatro filas con tipografía monoespaciada; los campos inciertos se marcaron con […]."
       ],
-      "notes": "La reconstrucci?n de la captura real es parcial y no asigna servicios ni valores a las filas. Las respuestas correctas de las preguntas 29 y 30 no se modificaron.",
-      "reconstructionSha256": "ede06f3ccaa4425d965706cedb60c95e65af5acb7af572a90d4f66bc5ae578fe",
+      "notes": "La captura original tiene cuatro filas; la reconstrucción parcial las conserva sin asignar servicios ni valores. La variante de práctica queda separada y conserva tres entradas recordadas (TCP 22 LISTEN, TCP 443 LISTEN, UDP 8280 con estado vacío); ninguna se presenta como transcripción fotográfica. Las respuestas correctas de las preguntas 29 y 30 no se modificaron.",
+      "reconstructionSha256": "532868499ef3dbbfd4dc89f5a1991bf6aff275821be7e184dd13b0527aa56e3c",
       "practiceVariantFile": "assets/reconstrucciones/netstat-variante-recordada-practica.svg",
       "practiceVariantSha256": "5754a93613fb9b26a05b39577df1a4698585c80912e49f1bc5b7fb35a9c37b91",
       "practiceVariantComparisonFile": "assets/comparaciones/netstat-original-vs-variante-recordada.jpg",
-      "practiceVariantNote": "Variante reconstruida para pr?ctica a partir del recuerdo asociado a la pregunta 30: TCP 22 LISTEN, TCP 443 LISTEN y UDP 8280 con estado vac?o. Direcciones y colas no especificadas; no es transcripci?n de la foto.",
-      "comparisonSha256": "f52b36f859b56e3994a0460bcb3511b044f3ff26b97b8b525fe76a241921be0d",
-      "practiceVariantComparisonSha256": "2333f1c16c3d119f8e58ef575ec8368cdd88cfce3c495df10390d182dea46f63"
+      "practiceVariantNote": "Variante reconstruida para práctica: tres entradas recordadas asociadas a la pregunta 30: TCP 22 LISTEN, TCP 443 LISTEN y UDP 8280 con estado vacío. Direcciones y colas no especificadas; no es transcripción de la foto.",
+      "comparisonSha256": "bb3e043bddc84f403e1401a71819f90c7f9659b84c96b99cd2ca1785d89e7e61",
+      "practiceVariantComparisonSha256": "346849ddab60a80178d1f4d4f5d6dfa96b7512f625e21e8de9e0bcb0e5cbdc60"
     }
   ]
 }

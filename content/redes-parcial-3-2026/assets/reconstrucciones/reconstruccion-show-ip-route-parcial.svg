@@ -130,7 +130,7 @@
     <text x="110" y="1436">L     192.168.60.1/32 is directly connected, GigabitEthernet0/0/1</text>
     <text x="110" y="1472">   192.168.70.0/24 is variably subnetted, 2 subnets, 2 masks</text>
     <text x="110" y="1508">C     192.168.70.0/24 is directly connected, Serial0/1/1</text>
-    <text x="110" y="1544">L     192.168.70.2/32 is directly connected, Serial0/1/1</text>
+    <text x="110" y="1544">L     192.168.70.1/32 is directly connected, Serial0/1/1</text>
   </g>
   <text x="90" y="1650" class="small muted">Consola transcrita. Rótulos de Router0/Router1 e interfaces del dibujo, y sentido de marcas rojas, no verificables.</text>
 </svg>
