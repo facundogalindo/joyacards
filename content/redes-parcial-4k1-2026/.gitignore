@@ -1,0 +1,3 @@
+.checkpoint-extraccion.json
+*.tmp
+__pycache__/
