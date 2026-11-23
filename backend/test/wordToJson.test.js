@@ -67,6 +67,44 @@ test("imports an old Word document without justifications", async () => {
   assert.equal(result.questions[0].options[1].text, "Buenos Aires");
 });
 
+test("does not split question text at RFC 1918) or TCP 22)", async () => {
+  const rfcPrompt = "¿Por qué no se deben encaminar en Internet las direcciones privadas (RFC 1918)?";
+  const tcpPrompt = "La conexión SSH (TCP 22) llega al servidor. ¿Qué hará el firewall?";
+  const result = await importLines([
+    `@@@ 3. ${rfcPrompt}`,
+    "a) Los rangos privados se reutilizan *",
+    "b) IPv4 prohíbe traducir paquetes",
+    `@@ 24. ${tcpPrompt}`,
+    "a) La regla permite la conexión *",
+    "b) La conexión siempre se bloquea"
+  ]);
+
+  assert.equal(result.total, 2);
+  assert.deepEqual(result.warnings, []);
+  assert.equal(result.questions[0].question, rfcPrompt);
+  assert.deepEqual(result.questions[0].answers, ["A"]);
+  assert.equal(result.questions[1].question, tcpPrompt);
+  assert.deepEqual(result.questions[1].answers, ["A"]);
+});
+
+test("only treats option labels at actual line or paragraph boundaries as labels", () => {
+  const parsed = parseHtmlToQuestions(
+    "<p>@@ 1. Text containing RFC 1918), TCP 22), and a) inline.</p>" +
+      "<p>a) First option *</p><p>b) Second option</p>"
+  );
+
+  assert.equal(parsed.questions.length, 1);
+  assert.equal(
+    parsed.questions[0].question,
+    "Text containing RFC 1918), TCP 22), and a) inline."
+  );
+  assert.deepEqual(parsed.questions[0].options.map((option) => option.text), [
+    "First option",
+    "Second option"
+  ]);
+  assert.deepEqual(parsed.warnings, []);
+});
+
 test("parses both justification markers and preserves multiple lines", async () => {
   const result = await importLines([
     "@@ 1. What uses TCP port 80?",
@@ -280,6 +318,22 @@ test("imports explicitly marked multiple-choice practice without an answer key",
   assert.ok(result.questions[0].options.every((option) => option.isCorrect === false));
 });
 
+test("imports explicitly marked single-choice practice without an answer key", async () => {
+  const result = await importLines([
+    "@@ 1. Which service is shown?",
+    "[[SIN_PUNTUAR]]",
+    "a) SSH",
+    "b) HTTPS"
+  ]);
+
+  assert.equal(result.total, 1);
+  assert.deepEqual(result.warnings, []);
+  assert.equal(result.questions[0].type, "single_choice");
+  assert.equal(result.questions[0].isUnscored, true);
+  assert.deepEqual(result.questions[0].answers, []);
+  assert.ok(result.questions[0].options.every((option) => option.isCorrect === false));
+});
+
 test("does not import unmarked or unsupported zero-answer questions", async () => {
   const unmarked = await importLines([
     "@@@ 1. Unmarked question",
@@ -287,13 +341,13 @@ test("does not import unmarked or unsupported zero-answer questions", async () =
     "b) Second"
   ]);
   const wrongType = await importLines([
-    "@@ 1. Marker on a single-choice question",
+    "@ 1. Marker on a true-false question",
     "[[SIN_PUNTUAR]]",
-    "a) First",
-    "b) Second"
+    "a) Verdadero",
+    "b) Falso"
   ]);
   const misplacedMarker = await importLines([
-    "@@@ 1. Marker after options is too late",
+    "@@ 1. Marker after options is too late",
     "a) First",
     "[[SIN_PUNTUAR]]",
     "b) Second"

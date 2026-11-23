@@ -34,11 +34,8 @@ function shuffleArray(array) {
 
 function normalizeWordText(rawText) {
   return rawText
-    .replace(/\r/g, "\n")
-    .replace(/\u00A0/g, " ")
-    .replace(/(@{1,5}\s*\d+[\).]\s*)/g, "\n$1")
-    .replace(/(^|[\n\r\t\s:;])([a-zA-Z]\)\s*)/g, "$1\n$2")
-    .replace(/(^|[\n\r\t\s])(\d+\)\s*)/g, "$1\n$2");
+    .replace(/\r\n?/g, "\n")
+    .replace(/\u00A0/g, " ");
 }
 
 function getLines(rawText) {
@@ -411,7 +408,7 @@ function processTextLine(line, state) {
     const question = state.currentQuestion;
     if (
       question &&
-      question.type === "multiple_choice" &&
+      ["single_choice", "multiple_choice"].includes(question.type) &&
       question.isUnscored !== true &&
       question.options.length === 0
     ) {
@@ -628,7 +625,7 @@ function isValidQuestion(question) {
 
   if (question.isUnscored === true) {
     return (
-      question.type === "multiple_choice" &&
+      ["single_choice", "multiple_choice"].includes(question.type) &&
       question.options.length > 0 &&
       question.options.every((option) => option.isCorrect === false) &&
       question.answers.length === 0

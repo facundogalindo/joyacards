@@ -206,6 +206,32 @@ test("unscored multiple-choice cards retain checkbox selection without a key", (
   assert.deepEqual(deselected, ["B"]);
 });
 
+test("unscored single-choice cards can continue without a result or score", () => {
+  const question = {
+    type: "single_choice",
+    question: "Which service is shown?",
+    isUnscored: true,
+    options: [
+      { id: "ssh", letter: "A", text: "SSH", isCorrect: false },
+      { id: "https", letter: "B", text: "HTTPS", isCorrect: false }
+    ],
+    answers: []
+  };
+  const prepared = prepareQuizQuestions([question], 1)[0];
+
+  assert.equal(prepared.type, "single_choice");
+  assert.equal(prepared.isUnscored, true);
+  assert.deepEqual(prepared.answers, []);
+  assert.ok(prepared.options.every((option) => option.isCorrect === false));
+  assert.equal(canAdvanceQuizQuestion(prepared, null), true);
+  assert.deepEqual(summarizeQuiz([prepared, { type: "single_choice" }], 0), {
+    presentedCount: 2,
+    scoreableCount: 1,
+    unscoredCount: 1,
+    correctCount: 0
+  });
+});
+
 test("unscored cards can advance without a result and are excluded from the selected quiz denominator", () => {
   const scoreable = { type: "single_choice" };
   const unscored = { type: "multiple_choice", isUnscored: true };
