@@ -1799,6 +1799,118 @@ input {
   background: #334155;
 }
 
+/* Repaso de errores */
+.error-review-card {
+  border: 3px solid #dc2626;
+}
+
+.error-review-card .quiz-stats {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.error-review-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.error-review-heading h2 {
+  margin: 0;
+}
+
+.review-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.review-pending-count {
+  color: #b91c1c;
+}
+
+.error-review-summary {
+  text-align: center;
+}
+
+.review-summary-intro {
+  max-width: 620px;
+  margin: 0 auto 20px;
+  color: #64748b;
+}
+
+.review-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.review-summary-panel {
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.review-summary-panel h2 {
+  margin-bottom: 12px;
+  font-size: 19px;
+}
+
+.review-summary-panel p:last-child {
+  margin-bottom: 0;
+}
+
+.review-score {
+  margin-bottom: 10px;
+  color: #1d4ed8;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.app-shell[data-theme="dark"] .error-review-card {
+  border-color: #f87171;
+}
+
+.app-shell[data-theme="dark"] .review-badge {
+  background: #450a0a;
+  color: #fecaca;
+}
+
+.app-shell[data-theme="dark"] .review-pending-count {
+  color: #fca5a5;
+}
+
+.app-shell[data-theme="dark"] .review-summary-intro {
+  color: #cbd5e1;
+}
+
+.app-shell[data-theme="dark"] .review-summary-panel {
+  border-color: #475569;
+  background: #0f172a;
+}
+
+.app-shell[data-theme="dark"] .review-score {
+  color: #93c5fd;
+}
+
+.app-shell[data-theme="dark"] .danger-button {
+  background: #b91c1c;
+}
+
+.app-shell[data-theme="dark"] .danger-button:hover {
+  background: #991b1b;
+}
+
 .app-shell[data-theme="dark"] button:disabled {
   background: #475569;
   color: #cbd5e1;
@@ -1812,6 +1924,18 @@ input {
   .theme-toggle {
     width: auto;
     margin: 0;
+  }
+
+  .error-review-card {
+    border-width: 3px;
+  }
+
+  .review-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .error-review-card .quiz-stats {
+    align-items: flex-start;
   }
 }
 
